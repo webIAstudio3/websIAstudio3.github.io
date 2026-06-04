@@ -729,4 +729,23 @@
   }
 </script>
 </body>
+  <!-- webAI Studio Chatbot -->
+<script>
+(function(){
+  var iframe = document.createElement('iframe');
+  iframe.src = 'chatbot.html';
+  iframe.style.cssText = 'position:fixed;bottom:80px;right:20px;width:380px;height:560px;border:none;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.4);z-index:9999;display:none;transition:opacity .3s';
+  iframe.id = 'webai-chat-frame';
+  document.body.appendChild(iframe);
+
+  var btn = document.createElement('button');
+  btn.innerHTML = '💬';
+  btn.style.cssText = 'position:fixed;bottom:20px;right:20px;width:54px;height:54px;border-radius:50%;background:#C8FF00;color:#07080D;font-size:1.4rem;border:none;cursor:pointer;z-index:9999;box-shadow:0 4px 20px rgba(200,255,0,.3)';
+  btn.onclick = function(){
+    var f = document.getElementById('webai-chat-frame');
+    f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  };
+  document.body.appendChild(btn);
+})();
+</script>
 </html>
