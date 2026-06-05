@@ -731,21 +731,45 @@
   <!-- webAI Studio Chatbot Widget -->
 <script>
 (function(){
+  // Botón flotante
   var btn=document.createElement('button');
   btn.id='webai-toggle';
   btn.innerHTML='💬';
-  btn.style.cssText='position:fixed;bottom:22px;right:22px;width:56px;height:56px;border-radius:50%;background:#C8FF00;color:#07080D;font-size:1.4rem;border:none;cursor:pointer;z-index:9998;box-shadow:0 4px 20px rgba(200,255,0,.35);transition:transform .2s;';
+  btn.title='Chat con nosotros';
+  btn.style.cssText='position:fixed;bottom:22px;right:22px;width:56px;height:56px;'+
+    'border-radius:50%;background:#C8FF00;color:#07080D;font-size:1.4rem;'+
+    'border:none;cursor:pointer;z-index:9998;box-shadow:0 4px 20px rgba(200,255,0,.35);'+
+    'transition:transform .2s;';
+  btn.onmouseover=function(){this.style.transform='scale(1.1)'};
+  btn.onmouseout=function(){this.style.transform='scale(1)'};
 
+  // iFrame del chat
   var frame=document.createElement('iframe');
   frame.src='chat-widget.html';
-  frame.style.cssText='position:fixed;bottom:90px;right:22px;width:370px;height:760px;border:none;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.45);z-index:9997;display:none;';
+  frame.id='webai-chat-frame';
+  frame.style.cssText='position:fixed;bottom:90px;right:22px;width:370px;height:560px;'+
+    'border:none;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.45);'+
+    'z-index:9997;display:none;transition:opacity .3s,transform .3s;'+
+    'opacity:0;transform:translateY(12px);';
 
   var open=false;
   btn.onclick=function(){
     open=!open;
-    frame.style.display=open?'block':'none';
-    btn.innerHTML=open?'✕':'💬';
+    if(open){
+      frame.style.display='block';
+      setTimeout(function(){
+        frame.style.opacity='1';
+        frame.style.transform='translateY(0)';
+      },10);
+      btn.innerHTML='✕';
+    } else {
+      frame.style.opacity='0';
+      frame.style.transform='translateY(12px)';
+      setTimeout(function(){ frame.style.display='none'; },300);
+      btn.innerHTML='💬';
+    }
   };
+
   document.body.appendChild(frame);
   document.body.appendChild(btn);
 })();
