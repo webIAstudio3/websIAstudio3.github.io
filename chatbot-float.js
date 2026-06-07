@@ -28,7 +28,7 @@
       'bottom:88px;' +
       'right:' + RIGHT + ';' +
       'left:' + LEFT + ';' +
-      'width:370px;height:860px;' +
+      'width:370px;height:460px;' +
       'z-index:99998;' +
       'opacity:0;' +
       'transform:translateY(20px) scale(.97);' +
