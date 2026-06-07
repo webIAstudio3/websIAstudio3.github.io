@@ -728,5 +728,20 @@
     m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
   }
 </script>
+  <!-- webAI Studio — Chat Flotante -->
+<!-- Antes de </body> en tu index.html -->
+
+<!-- Opción 1: Básico (usa el botón verde) -->
+<script src="chatbot-float.js"></script>
+
+<!-- Opción 2: Personalizado -->
+<script>
+  window.WebAIConfig = {
+    src:   'chat-widget.html',
+    color: '#C8FF00',
+    pos:   'right'
+  };
+</script>
+<script src="chatbot-float.js"></script>
 </body>
 </html>
