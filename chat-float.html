@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat webAI Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ───────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── TRANSPARENT OVERLAY ─────────────── */
+/* pointer-events:none makes clicks pass through to the underlying page */
+html,body{
+  background:transparent!important;
+  overflow:hidden;
+  width:100%;height:100%;
+  pointer-events:none; /* transparent areas are click-through */
+  font-family:'DM Sans',sans-serif;
+}
+
+/* ── TOKENS ──────────────────────────── */
+:root{
+  --bg:#07080D;--bg2:#0F1120;--bg3:#181B2E;--bg4:#1F2340;
+  --lime:#C8FF00;--mint:#00E5A0;--coral:#FF6B6B;
+  --sky:#4FC3F7;--violet:#7C5CFC;--amber:#FFB347;
+  --off:#F0F2FF;--muted:#7A7D95;--border:rgba(255,255,255,0.07);
+  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
+}
+
+/* ── ALL INTERACTIVE ELEMENTS ────────── */
+#chat-btn,#chat-panel,#chat-badge{pointer-events:all}
+
+/* ── FLOATING BUTTON ─────────────────── */
+#chat-btn{
+  position:fixed;bottom:20px;right:20px;
+  width:56px;height:56px;border-radius:50%;
+  background:var(--lime);color:var(--bg);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;line-height:1;
+  box-shadow:0 4px 20px rgba(200,255,0,.4),0 2px 8px rgba(0,0,0,.35);
+  transition:transform .2s,box-shadow .2s;
+  z-index:100;
+}
+#chat-btn:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(200,255,0,.55)}
+
+/* ── NOTIFICATION BADGE ──────────────── */
+#chat-badge{
+  position:fixed;bottom:62px;right:14px;
+  background:var(--coral);color:#fff;
+  border-radius:50%;width:20px;height:20px;
+  font-size:.65rem;font-weight:700;
+  display:none;align-items:center;justify-content:center;
+  border:2px solid white;
+  animation:waipulse 2s ease-in-out infinite;
+  z-index:101;
+}
+@keyframes waipulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+/* ── CHAT PANEL ──────────────────────── */
+#chat-panel{
+  position:fixed;
+  bottom:88px;right:20px;
+  width:370px;height:582px;
+  display:none;flex-direction:column;
+  background:var(--bg2);
+  border-radius:18px;
+  border:1px solid var(--border);
+  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04);
+  overflow:hidden;
+  z-index:99;
+  animation:slideUp .3s cubic-bezier(.4,0,.2,1);
+}
+#chat-panel.open{display:flex}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+
+/* ── HEADER ──────────────────────────── */
+.hdr{
+  padding:.82rem 1rem;background:var(--bg3);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.7rem;flex-shrink:0;
+}
+.hdr-av{width:36px;height:36px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.hdr-info{flex:1;min-width:0}
+.hdr-info h4{font-family:var(--fh);font-size:.86rem;font-weight:700;color:var(--off);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-status{display:flex;align-items:center;gap:.32rem;font-size:.67rem;color:var(--mint);margin-top:.08rem}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--mint);animation:blink 2s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hdr-restart{
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  border-radius:8px;color:var(--muted);
+  cursor:pointer;font-size:.75rem;
+  padding:.28rem .55rem;line-height:1;
+  transition:background .18s,color .18s;flex-shrink:0;
+  font-family:var(--fb);
+}
+.hdr-restart:hover{background:rgba(255,107,107,.15);color:var(--coral);border-color:rgba(255,107,107,.3)}
+
+/* ── PROGRESS ────────────────────────── */
+.prog{padding:.45rem 1rem;background:var(--bg3);border-bottom:1px solid var(--border);flex-shrink:0;display:none}
+.prog-row{display:flex;justify-content:space-between;font-size:.62rem;color:var(--muted);margin-bottom:.28rem}
+.prog-track{height:3px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+.prog-fill{height:100%;background:var(--lime);border-radius:999px;transition:width .5s ease}
+
+/* ── MESSAGES ────────────────────────── */
+.msgs{flex:1;overflow-y:auto;padding:.8rem .9rem;display:flex;flex-direction:column;gap:.7rem;scroll-behavior:smooth}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── BUBBLES ─────────────────────────── */
+.msg{display:flex;flex-direction:column;max-width:84%}
+.msg.bot{align-self:flex-start}
+.msg.usr{align-self:flex-end}
+.bub{padding:.58rem .82rem;border-radius:14px;font-size:.82rem;line-height:1.65}
+.msg.bot .bub{background:var(--bg3);color:var(--off);border-bottom-left-radius:4px}
+.msg.usr .bub{background:var(--lime);color:var(--bg);font-weight:500;border-bottom-right-radius:4px}
+.ts{font-size:.59rem;color:var(--muted);margin-top:.18rem;padding:0 .2rem}
+.msg.usr .ts{text-align:right}
+
+/* ── TYPING ──────────────────────────── */
+.twrap{align-self:flex-start}
+.tbub{background:var(--bg3);border-radius:14px;border-bottom-left-radius:4px;padding:.58rem .82rem;display:flex;gap:.26rem;align-items:center}
+.td{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tdot 1.2s infinite}
+.td:nth-child(2){animation-delay:.2s}
+.td:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,80%,100%{transform:scale(.55)}40%{transform:scale(1)}}
+
+/* ── OPTIONS ─────────────────────────── */
+.opts{padding:.45rem .85rem;display:flex;flex-wrap:wrap;gap:.35rem;border-top:1px solid var(--border);flex-shrink:0}
+.opts:empty{padding:0;border-top:none}
+.opt{
+  background:var(--bg3);border:1px solid var(--border);border-radius:999px;
+  padding:.35rem .8rem;font-size:.75rem;color:var(--off);
+  cursor:pointer;font-family:var(--fb);
+  transition:background .18s,border-color .18s,color .18s;white-space:nowrap;
+}
+.opt:hover{background:var(--bg4);border-color:rgba(200,255,0,.4);color:var(--lime)}
+.opt.secondary{
+  background:transparent;color:var(--muted);
+  border-color:rgba(255,255,255,.06);font-size:.72rem;
+}
+.opt.secondary:hover{color:var(--coral);border-color:rgba(255,107,107,.3);background:rgba(255,107,107,.06)}
+
+/* ── INPUT ───────────────────────────── */
+.inp-row{padding:.65rem .85rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-shrink:0}
+.inp{
+  flex:1;background:var(--bg3);border:1px solid var(--border);
+  border-radius:999px;padding:.48rem .9rem;
+  color:var(--off);font-size:.82rem;font-family:var(--fb);outline:none;
+  transition:border-color .2s;
+}
+.inp:focus{border-color:rgba(200,255,0,.35)}
+.inp::placeholder{color:var(--muted)}
+.inp:disabled{opacity:.45}
+.snd{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--lime);color:var(--bg);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;transition:transform .15s;flex-shrink:0;
+}
+.snd:hover{transform:scale(1.1)}
+.snd:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ── PLAN CARDS ──────────────────────── */
+.plans{display:flex;flex-direction:column;gap:.55rem;width:100%;margin:.15rem 0}
+.pcard{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:.88rem;transition:border-color .2s}
+.pcard.rec{border-color:rgba(200,255,0,.35);background:rgba(200,255,0,.04)}
+.pcard-badge{display:inline-block;background:var(--lime);color:var(--bg);font-size:.6rem;font-weight:700;border-radius:999px;padding:.15rem .55rem;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.04em}
+.pcard-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem}
+.pcard-emo{font-size:1.25rem}
+.pcard-name{font-family:var(--fh);font-size:.86rem;font-weight:700}
+.pcard-price{font-size:.73rem;font-weight:600;margin-top:.04rem}
+.pcard-tag{font-size:.71rem;color:var(--muted);margin-bottom:.45rem;font-style:italic}
+.pcard-feats{list-style:none;display:flex;flex-direction:column;gap:.16rem;margin-bottom:.6rem}
+.pcard-feats li{font-size:.71rem;color:var(--muted)}
+.pcard-feats li::before{content:'✓ ';color:var(--lime);font-weight:700}
+.pcbtn{
+  width:100%;padding:.42rem;border-radius:999px;font-size:.73rem;
+  cursor:pointer;font-family:var(--fb);transition:opacity .15s;
+  background:var(--lime);color:var(--bg);font-weight:600;border:none;
+}
+.pcbtn:hover{opacity:.88}
+.pcbtn:disabled{opacity:.35;cursor:not-allowed}
+
+/* ── FINISH CARD ─────────────────────── */
+.finish{
+  margin:.45rem .85rem;
+  background:rgba(200,255,0,.06);border:1px solid rgba(200,255,0,.2);
+  border-radius:14px;padding:.9rem;text-align:center;
+  flex-shrink:0;display:none;
+}
+.finish-ic{font-size:1.7rem;margin-bottom:.35rem}
+.finish h4{font-family:var(--fh);font-size:.86rem;font-weight:700;color:var(--lime);margin-bottom:.25rem}
+.finish p{font-size:.73rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem}
+.finish-btns{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.wa-btn{
+  background:#25D366;color:#fff;border:none;border-radius:999px;
+  padding:.5rem 1.1rem;font-size:.78rem;font-weight:600;cursor:pointer;
+  font-family:var(--fb);display:inline-flex;align-items:center;gap:.45rem;transition:opacity .15s;
+}
+.wa-btn:hover{opacity:.88}
+.restart-btn{
+  background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border);
+  border-radius:999px;padding:.5rem 1.1rem;font-size:.78rem;cursor:pointer;
+  font-family:var(--fb);display:inline-flex;align-items:center;gap:.35rem;transition:background .18s,color .18s;
+}
+.restart-btn:hover{background:rgba(200,255,0,.1);color:var(--lime);border-color:rgba(200,255,0,.3)}
+
+/* ── MOBILE ──────────────────────────── */
+@media(max-width:480px){
+  #chat-panel{bottom:76px;right:0;left:0;width:100%;height:88vh;border-radius:16px 16px 0 0}
+  #chat-btn{right:16px}
+  #chat-badge{right:10px}
+}
+</style>
+</head>
+<body>
+
+<!-- NOTIFICATION BADGE -->
+<div id="chat-badge">1</div>
+
+<!-- FLOATING BUTTON -->
+<button id="chat-btn" aria-label="Abrir chat">
+  <span id="chat-ico">💬</span>
+</button>
+
+<!-- CHAT PANEL -->
+<div id="chat-panel">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-av">🤖</div>
+    <div class="hdr-info">
+      <h4 id="botName">Asistente webAI</h4>
+      <div class="hdr-status"><span class="sdot"></span>Asesor comercial · Con IA</div>
+    </div>
+    <button class="hdr-restart" onclick="confirmRestart()" title="Volver a empezar">↺ Reiniciar</button>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="prog" id="prog">
+    <div class="prog-row"><span id="pLabel">Paso 1</span><span id="pPct">0%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="msgs" id="msgs"></div>
+
+  <!-- OPTIONS -->
+  <div class="opts" id="opts"></div>
+
+  <!-- FINISH CARD -->
+  <div class="finish" id="finishCard">
+    <div class="finish-ic">🎉</div>
+    <h4>¡Todo listo!</h4>
+    <p id="finishMsg">Nuestro equipo revisará tu información y te contactará muy pronto.</p>
+    <div class="finish-btns">
+      <button class="wa-btn" onclick="sendToWA()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Enviar por WhatsApp
+      </button>
+      <button class="restart-btn" onclick="softRestart()">↺ Nueva consulta</button>
+    </div>
+  </div>
+
+  <!-- INPUT ROW -->
+  <div class="inp-row">
+    <input class="inp" id="inp" placeholder="Escribe tu respuesta..."
+           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();onInput(this.value)}">
+    <button class="snd" id="sndBtn" onclick="onInput(document.getElementById('inp').value)">➤</button>
+  </div>
+
+</div><!-- /chat-panel -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  STORAGE  (shared with admin.html)
+// ══════════════════════════════════════════════════════
+const SK='webai_state', AK='webai_apikey';
+function loadSt(){ try{return JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){return{};} }
+function saveSt(p){ try{localStorage.setItem(SK,JSON.stringify({...loadSt(),...p}));}catch(e){} }
+function getKey(){ return localStorage.getItem(AK)||''; }
+
+// ══════════════════════════════════════════════════════
+//  PLAN DISPLAY INFO  (static — name, price, features)
+// ══════════════════════════════════════════════════════
+const PLAN_INFO={
+  lanzamiento:{name:'Plan Lanzamiento',emoji:'🚀',price:'$490.000',color:'#4FC3F7',
+    tagline:'Tu primera presencia web profesional en 5 días',
+    features:['Landing page de una página','Diseño con tus colores y logo','WhatsApp + formulario de contacto','Versión móvil y escritorio','Dominio + hosting 1 año']},
+  crecimiento:{name:'Plan Crecimiento',emoji:'📈',price:'$890.000',color:'#C8FF00',
+    tagline:'Web completa para captar clientes y vender online',
+    features:['Hasta 5 páginas / secciones','Pasarela de pagos integrada','SEO optimizado para Google','Google Analytics + Pixel Meta','3 meses de soporte técnico']},
+  pro:{name:'Plan Pro + IA',emoji:'🤖',price:'$1.600.000',color:'#7C5CFC',
+    tagline:'IA + automatización trabajando por tu negocio 24/7',
+    features:['Todo el Plan Crecimiento','Chatbot IA personalizado','Automatización de leads','Email marketing integrado','Soporte prioritario 6 meses']}
+};
+
+// ══════════════════════════════════════════════════════
+//  DEFAULTS  (used when admin hasn't configured yet)
+// ══════════════════════════════════════════════════════
+const DEF_FLOW=[
+  {id:1,key:'nombre',       question:'¿Cuál es tu nombre?',                                            type:'text',   options:[],isAlert:false},
+  {id:2,key:'negocio',      question:'¿Cuál es el nombre de tu negocio?',                              type:'text',   options:[],isAlert:false},
+  {id:3,key:'descripcion',  question:'¿A qué se dedica tu negocio?',                                   type:'text',   options:[],isAlert:false},
+  {id:4,key:'objetivo',     question:'¿Cuál es tu objetivo principal con la web?',                     type:'options',options:['Conseguir más clientes','Vender productos online','Mostrar mis servicios','Automatizar procesos'],isAlert:false},
+  {id:5,key:'tiene_web',    question:'¿Tienes página web actualmente?',                                type:'options',options:['Sí, tengo web','No tengo web'],isAlert:false},
+  {id:6,key:'vender_online',question:'¿Necesitas vender online?',                                      type:'options',options:['Sí, necesito vender online','No por ahora'],isAlert:false},
+  {id:7,key:'ia_interes',   question:'¿Te interesa incluir automatización o inteligencia artificial?', type:'options',options:['Sí, me interesa','No por ahora'],isAlert:false},
+  {id:8,key:'whatsapp',     question:'¿Cuál es tu número de WhatsApp para contactarte?',               type:'text',   options:[],isAlert:false}
+];
+const DEF_PLAN_QS={
+  lanzamiento:[
+    {id:1,key:'d_logo',      question:'¿Tienes logo de tu negocio?',                                   type:'options',options:['Sí, tengo logo listo','No, necesito que me diseñen uno','Tengo uno pero quiero mejorarlo'],isAlert:false},
+    {id:2,key:'d_colores',   question:'¿Qué colores quieres en tu web? Describe o da referencias',    type:'text',   options:[],isAlert:false},
+    {id:3,key:'d_servicios', question:'¿Cuántos servicios o productos vas a mostrar?',                type:'options',options:['1 a 3','4 a 8','Más de 8'],isAlert:false},
+    {id:4,key:'d_fotos',     question:'¿Tienes fotos o imágenes del negocio?',                        type:'options',options:['Sí, tengo buenas fotos','Tengo algunas, no muy buenas','No tengo fotos aún'],isAlert:false},
+    {id:5,key:'d_cta',       question:'¿Cuál es la acción principal que quieres que haga el visitante?',type:'options',options:['Contactarme por WhatsApp','Llenar un formulario','Agendar una cita','Conocer mi negocio'],isAlert:false},
+    {id:6,key:'d_referencia',question:'¿Tienes alguna web de referencia? (link o "ninguna")',          type:'text',   options:[],isAlert:false}
+  ],
+  crecimiento:[
+    {id:1,key:'d_n_productos',question:'¿Cuántos productos o servicios tienes para publicar?',         type:'options',options:['Menos de 10','10 a 30','Más de 30'],isAlert:false},
+    {id:2,key:'d_pasarela',   question:'¿Necesitas recibir pagos desde la web?',                       type:'options',options:['Sí, quiero cobrar online','No por ahora','No estoy seguro/a'],isAlert:false},
+    {id:3,key:'d_seo',        question:'¿Qué tan importante es aparecer en Google?',                   type:'options',options:['Muy importante','Me interesa pero no es urgente','No lo necesito aún'],isAlert:false},
+    {id:4,key:'d_pixel',      question:'¿Haces o planeas publicidad en Facebook / Instagram?',         type:'options',options:['Sí, actualmente hago pauta','Planeo hacerlo pronto','No por ahora'],isAlert:false},
+    {id:5,key:'d_testimonios',question:'¿Tienes testimonios o reseñas de clientes para mostrar?',      type:'options',options:['Sí, tengo varios','Tengo pocos','No tengo aún'],isAlert:false},
+    {id:6,key:'d_referencia', question:'¿Hay alguna web que admires como referencia?',                 type:'text',   options:[],isAlert:false}
+  ],
+  pro:[
+    {id:1,key:'d_automatizar',question:'¿Qué procesos quieres automatizar primero?',                   type:'options',options:['Atención al cliente 24/7','Captura y seguimiento de leads','Pedidos y pagos automáticos','Todos los anteriores'],isAlert:false},
+    {id:2,key:'d_faq',        question:'¿Cuáles son las 3 preguntas más frecuentes de tus clientes?', type:'text',   options:[],isAlert:false},
+    {id:3,key:'d_mensajes',   question:'¿Cuántos mensajes de clientes recibes al día?',                type:'options',options:['Menos de 10','Entre 10 y 50','Más de 50','Aún no lo sé'],isAlert:false},
+    {id:4,key:'d_emails',     question:'¿Necesitas correos automáticos para tus clientes?',            type:'options',options:['Sí, es clave','Me interesa pero no sé por dónde','No lo necesito aún'],isAlert:false},
+    {id:5,key:'d_embudo',     question:'¿Tienes un proceso de seguimiento de ventas definido?',        type:'options',options:['Sí, lo tengo claro','Tengo algo pero necesito mejorarlo','No, necesito ayuda'],isAlert:false},
+    {id:6,key:'d_bot_tono',   question:'¿Cómo quieres que responda el chatbot?',                      type:'options',options:['Formal y profesional','Amigable y cercano','Directo al punto','Que se adapte al cliente'],isAlert:false}
+  ]
+};
+const DEF_REC_RULES=[
+  {id:1,field:'ia_interes',   value:'Sí, me interesa',           plan:'pro',        priority:1},
+  {id:2,field:'objetivo',     value:'Automatizar procesos',       plan:'pro',        priority:2},
+  {id:3,field:'vender_online',value:'Sí, necesito vender online', plan:'crecimiento',priority:3},
+  {id:4,field:'objetivo',     value:'Vender productos online',    plan:'crecimiento',priority:4},
+  {id:5,field:'objetivo',     value:'Conseguir más clientes',     plan:'crecimiento',priority:5}
+];
+const DEF_SETTINGS={
+  botname:'Asistente webAI',business:'webAI Studio',
+  welcome:'¡Hola! 👋 Soy el asesor virtual de webAI Studio. Te haré unas preguntas rápidas para recomendarte la solución web ideal para tu negocio. ¿Empezamos?',
+  systemprompt:'Eres un asesor comercial amigable de webAI Studio. Conoces los 3 planes: Lanzamiento ($490K), Crecimiento ($890K) y Pro+IA ($1.6M COP). Responde en español, conciso y orientado a resolver dudas comerciales.',
+  alertwords:'problema,queja,reclamo,no funciona,estafa,fraude,molesto,enojado,terrible,pésimo,malo,devolución,caro',
+  whatsapp:''
+};
+
+// ══════════════════════════════════════════════════════
+//  RUNTIME STATE
+//  chatState: welcome|diag|rec|plan|open|done|confirming
+// ══════════════════════════════════════════════════════
+let chatState='welcome';
+let flow=[],planQs={},recRules=[],recDefault='lanzamiento',settings={};
+let diagStep=0,planStep=0,chosen=null;
+let lead={},history=[];
+let panelOpen=false, badgeShown=false, loaded=0;
+
+// ══════════════════════════════════════════════════════
+//  FLOATING BUTTON
+// ══════════════════════════════════════════════════════
+document.getElementById('chat-btn').addEventListener('click',function(){
+  panelOpen=!panelOpen;
+  const panel=document.getElementById('chat-panel');
+  const ico=document.getElementById('chat-ico');
+  if(panelOpen){
+    // Reload if admin saved new data since we last loaded
+    const st=loadSt();
+    if((st._lastSaved||0)>loaded){ init(); loaded=Date.now(); }
+    panel.classList.add('open');
+    ico.textContent='✕';
+    this.style.fontSize='1.2rem';
+    document.getElementById('chat-badge').style.display='none';
+    badgeShown=false;
+  } else {
+    panel.classList.remove('open');
+    ico.textContent='💬';
+    this.style.fontSize='1.4rem';
+  }
+});
+
+// Attention badge after 3s
+setTimeout(function(){
+  if(!panelOpen && !badgeShown){
+    document.getElementById('chat-badge').style.display='flex';
+    badgeShown=true;
+  }
+},3000);
+
+// ══════════════════════════════════════════════════════
+//  INIT  — loads ALL config from localStorage
+// ══════════════════════════════════════════════════════
+function init(){
+  const s=loadSt();
+  flow=(s.flow&&s.flow.length)?s.flow:JSON.parse(JSON.stringify(DEF_FLOW));
+  const sq=s.planQs||{};
+  planQs={
+    lanzamiento:(sq.lanzamiento&&sq.lanzamiento.length)?sq.lanzamiento:JSON.parse(JSON.stringify(DEF_PLAN_QS.lanzamiento)),
+    crecimiento:(sq.crecimiento&&sq.crecimiento.length)?sq.crecimiento:JSON.parse(JSON.stringify(DEF_PLAN_QS.crecimiento)),
+    pro:(sq.pro&&sq.pro.length)?sq.pro:JSON.parse(JSON.stringify(DEF_PLAN_QS.pro))
+  };
+  recRules=(s.recRules&&s.recRules.length)?s.recRules:JSON.parse(JSON.stringify(DEF_REC_RULES));
+  recDefault=s.recDefault||'lanzamiento';
+  settings=s.settings?{...DEF_SETTINGS,...s.settings}:{...DEF_SETTINGS};
+  document.getElementById('botName').textContent=settings.botname||'Asistente webAI';
+
+  chatState='welcome'; diagStep=0; planStep=0; chosen=null;
+  lead={timestamp:new Date().toLocaleString('es-CO')};
+  history=[];
+
+  document.getElementById('msgs').innerHTML='';
+  document.getElementById('opts').innerHTML='';
+  document.getElementById('finishCard').style.display='none';
+  document.getElementById('prog').style.display='none';
+  setInput(false);
+
+  botMsg(settings.welcome);
+  setTimeout(()=>setOpts(['Sí, empecemos ✓','Tengo una pregunta primero']),700);
+}
+
+// ══════════════════════════════════════════════════════
+//  RESTART OPTIONS
+// ══════════════════════════════════════════════════════
+function confirmRestart(){
+  if(chatState==='welcome') return; // already at welcome
+  const prev=chatState;
+  chatState='confirming';
+  setInput(false);
+  setOpts([]);
+  botMsg('¿Seguro que quieres volver a empezar? Se perderá el progreso actual.');
+
+  const c=document.getElementById('opts');
+  // Yes button
+  const yes=document.createElement('button');
+  yes.className='opt'; yes.textContent='Sí, volver a empezar';
+  yes.onclick=()=>{ init(); };
+  c.appendChild(yes);
+  // No button
+  const no=document.createElement('button');
+  no.className='opt secondary'; no.textContent='No, continuar';
+  no.onclick=()=>{
+    chatState=prev;
+    c.innerHTML='';
+    botMsg('Continuemos donde estábamos. 👍');
+    // Restore state
+    if(prev==='diag')   setTimeout(askDiagQ,500);
+    else if(prev==='rec')  setTimeout(()=>buildRec(true),500);
+    else if(prev==='plan') setTimeout(askPlanQ,500);
+    else if(prev==='done'||prev==='open') { setInput(true); }
+  };
+  c.appendChild(no);
+}
+
+// Soft restart from finish card (no confirmation needed — lead already saved)
+function softRestart(){ init(); }
+
+// ══════════════════════════════════════════════════════
+//  CHANGE PLAN  (go back to plan selection)
+// ══════════════════════════════════════════════════════
+function changePlan(){
+  // Clear plan-specific lead data
+  Object.keys(lead).filter(k=>k.startsWith('d_')).forEach(k=>delete lead[k]);
+  delete lead.paquete; delete lead.precio;
+  chosen=null; planStep=0;
+  document.getElementById('prog').style.display='none';
+  setOpts([]); setInput(false);
+  botMsg('Claro, elige el plan que mejor se adapte a tu negocio:');
+  setTimeout(()=>renderPlanCards(calcPlan()),400);
+}
+
+// ══════════════════════════════════════════════════════
+//  ★ UNIFIED INPUT HANDLER ★
+//  askClaude() is NEVER called during 'diag' or 'plan' states
+// ══════════════════════════════════════════════════════
+function onInput(raw){
+  const val=(raw||'').trim();
+  if(!val) return;
+  clearField();
+
+  if(chatState==='welcome'){
+    userMsg(val); setOpts([]);
+    if(val.includes('✓')||/empe[cz]|comen[cz]/i.test(val)) beginDiag();
+    else{ chatState='open'; setInput(true); botMsg('¡Claro! ¿Cuál es tu pregunta?'); }
+    return;
+  }
+  if(chatState==='diag'){
+    userMsg(val); setOpts([]);
+    checkAlert(val);
+    const s=flow[diagStep];
+    if(s){ lead[s.key||('q'+diagStep)]=val; if(s.isAlert&&val.length>2) fireAlert('"'+s.question+'" → "'+val+'"',{...lead}); }
+    diagStep++;
+    setInput(false); typing(true);
+    setTimeout(()=>{ typing(false); advanceDiag(); },860);
+    return;
+  }
+  if(chatState==='plan'){
+    userMsg(val); setOpts([]);
+    const qs=planQs[chosen]||[];
+    if(planStep<qs.length) lead[qs[planStep].key]=val;
+    planStep++;
+    setInput(false); typing(true);
+    setTimeout(()=>{ typing(false); advancePlan(); },820);
+    return;
+  }
+  if(chatState==='done'&&/gracias/i.test(val)&&val.length<30){
+    userMsg(val); setOpts([]);
+    botMsg('¡De nada! 👋 Fue un placer asesorarte. ¡Mucho éxito!');
+    setInput(false); return;
+  }
+  if(chatState==='open'||chatState==='done'){
+    userMsg(val); setOpts([]);
+    checkAlert(val);
+    history.push({role:'user',content:val});
+    askClaude(val);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  PHASE 1 — DIAGNOSTIC
+// ══════════════════════════════════════════════════════
+function beginDiag(){
+  chatState='diag'; diagStep=0;
+  document.getElementById('prog').style.display='block';
+  updateProg(0,flow.length);
+  setTimeout(askDiagQ,480);
+}
+function askDiagQ(){
+  if(diagStep>=flow.length){ buildRec(); return; }
+  const s=flow[diagStep];
+  updateProg(diagStep,flow.length);
+  typing(true);
+  setTimeout(()=>{
+    typing(false); botMsg(s.question);
+    if(s.type==='options'&&s.options&&s.options.length){ setOpts(s.options); setInput(false); }
+    else{ setOpts([]); setInput(true); }
+  },500);
+}
+function advanceDiag(){ if(diagStep<flow.length) askDiagQ(); else buildRec(); }
+
+// ══════════════════════════════════════════════════════
+//  PHASE 2 — RECOMMENDATION ENGINE
+// ══════════════════════════════════════════════════════
+function buildRec(skipMsg){
+  chatState='rec'; setInput(false); setOpts([]);
+  document.getElementById('prog').style.display='none';
+  const recKey=calcPlan();
+  if(!skipMsg){
+    const name=(lead.nombre||'').split(' ')[0];
+    botMsg((name?name+', ¡':'¡')+'gracias! 🎯 Analicé tus respuestas y encontré el plan ideal.');
+  }
+  setTimeout(()=>{ typing(true); setTimeout(()=>{ typing(false); renderPlanCards(recKey); },900); },300);
+}
+function calcPlan(){
+  const s=loadSt();
+  const rules=(s.recRules&&s.recRules.length)?s.recRules:recRules;
+  const def=s.recDefault||recDefault;
+  const sorted=[...rules].sort((a,b)=>(a.priority||99)-(b.priority||99));
+  for(const r of sorted){
+    const lv=(lead[r.field]||'').toLowerCase(), rv=(r.value||'').toLowerCase();
+    if(lv&&rv&&(lv.includes(rv)||rv.includes(lv))) return r.plan;
+  }
+  return def;
+}
+function renderPlanCards(recKey){
+  const order=[recKey,...Object.keys(PLAN_INFO).filter(k=>k!==recKey)];
+  const wrap=document.createElement('div'); wrap.className='plans';
+  order.forEach(key=>{
+    const p=PLAN_INFO[key],isR=key===recKey;
+    const card=document.createElement('div'); card.className='pcard'+(isR?' rec':'');
+    card.innerHTML=
+      (isR?'<div class="pcard-badge">⭐ Recomendado para ti</div>':'')+
+      '<div class="pcard-head"><span class="pcard-emo">'+p.emoji+'</span>'+
+      '<div><div class="pcard-name">'+p.name+'</div>'+
+      '<div class="pcard-price" style="color:'+p.color+'">'+p.price+' COP</div></div></div>'+
+      '<div class="pcard-tag">'+p.tagline+'</div>'+
+      '<ul class="pcard-feats">'+p.features.map(f=>'<li>'+f+'</li>').join('')+'</ul>'+
+      '<button class="pcbtn" onclick="choosePlan(\''+key+'\')">'+(isR?'✓ Elegir este plan':'Elegir este plan')+'</button>';
+    wrap.appendChild(card);
+  });
+  appendEl(wrap);
+  setTimeout(()=>botMsg('¿Cuál plan se ajusta mejor a lo que necesitas?'),300);
+}
+
+// ══════════════════════════════════════════════════════
+//  PHASE 3 — PLAN SELECTION
+// ══════════════════════════════════════════════════════
+function choosePlan(key){
+  document.querySelectorAll('.pcbtn').forEach(b=>b.disabled=true);
+  // Re-read plan questions fresh from storage at selection time
+  const s=loadSt(), sq=s.planQs||{};
+  const qs=(sq[key]&&sq[key].length)?sq[key]:(planQs[key]||[]);
+  planQs[key]=qs;
+  const p=PLAN_INFO[key];
+  lead.paquete=p.name; lead.precio=p.price+' COP';
+  chosen=key; planStep=0; chatState='plan';
+  userMsg('Elijo el '+p.name+' '+p.emoji);
+  botMsg('¡Excelente! '+p.emoji+' Ahora necesito datos de diseño para crear tu web personalizada.');
+  const total=flow.length+qs.length;
+  document.getElementById('prog').style.display='block';
+  updateProg(flow.length,total);
+  setTimeout(askPlanQ,900);
+}
+
+// ══════════════════════════════════════════════════════
+//  PHASE 4 — PLAN-SPECIFIC QUESTIONS
+// ══════════════════════════════════════════════════════
+function askPlanQ(){
+  const qs=planQs[chosen]||[];
+  if(planStep>=qs.length){ finish(); return; }
+  const q=qs[planStep];
+  updateProg(flow.length+planStep,flow.length+qs.length);
+  typing(true);
+  setTimeout(()=>{
+    typing(false); botMsg(q.question);
+    if(q.type==='options'&&q.options&&q.options.length){
+      setOpts(q.options);
+      // Add "Change plan" as secondary option after first plan question
+      if(planStep===0){
+        const c=document.getElementById('opts');
+        const btn=document.createElement('button');
+        btn.className='opt secondary'; btn.textContent='← Cambiar plan';
+        btn.onclick=()=>{ userMsg('← Cambiar plan'); changePlan(); };
+        c.appendChild(btn);
+      }
+      setInput(false);
+    } else {
+      const opts=[];
+      if(planStep===0) {
+        // First text question — add change plan note inline
+        setOpts([]);
+        setInput(true);
+        // Add change plan button
+        const c=document.getElementById('opts');
+        const btn=document.createElement('button');
+        btn.className='opt secondary'; btn.textContent='← Cambiar plan';
+        btn.onclick=()=>{ userMsg('← Cambiar plan'); changePlan(); };
+        c.appendChild(btn);
+      } else {
+        setOpts([]); setInput(true);
+      }
+    }
+  },600);
+}
+function advancePlan(){
+  const qs=planQs[chosen]||[];
+  if(planStep<qs.length) askPlanQ(); else finish();
+}
+
+// ══════════════════════════════════════════════════════
+//  PHASE 5 — FINISH + WHATSAPP
+// ══════════════════════════════════════════════════════
+function finish(){
+  chatState='done'; setInput(false); setOpts([]);
+  updateProg(9999,9999);
+  saveLead({...lead});
+  const p=PLAN_INFO[chosen]||{name:'web',emoji:'🌐'};
+  const name=(lead.nombre||'').split(' ')[0];
+  botMsg((name?'¡'+name+', todo':'¡Todo')+' listo! 🎉 Tenemos la información para diseñar tu '+
+    p.name+' '+p.emoji+'. Nuestro equipo te contactará pronto'+(lead.whatsapp?' al '+lead.whatsapp:'')+'. ');
+  document.getElementById('finishCard').style.display='block';
+  setTimeout(()=>setOpts(['¿Cuándo empiezan?','¿Cómo se paga?','¿Qué incluye?','Gracias 👋']),1200);
+}
+
+function sendToWA(){
+  const s=loadSt();
+  const num=((s.settings||{}).whatsapp||settings.whatsapp||'').replace(/\D/g,'');
+  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(buildWAMsg()),'_blank');
+}
+function buildWAMsg(){
+  const lines=['*webAI Studio — Nuevo Lead* 🚀','─────────────────────',''];
+  const map=[['timestamp','⏰'],['nombre','👤'],['negocio','🏪'],['descripcion','📋'],
+             ['objetivo','🎯'],['tiene_web','🌐'],['vender_online','🛍'],['ia_interes','🤖'],
+             ['whatsapp','📱'],['paquete','💡'],['precio','💰']];
+  map.forEach(([k,ico])=>{ if(lead[k]) lines.push(ico+' '+k.replace(/_/g,' ')+': '+lead[k]); });
+  const extras=Object.entries(lead).filter(([k])=>k.startsWith('d_'));
+  if(extras.length){ lines.push('','─── Brief de diseño ───'); extras.forEach(([k,v])=>{ const lbl=k.replace('d_','').replace(/_/g,' '); lines.push('• '+lbl.charAt(0).toUpperCase()+lbl.slice(1)+': '+v); }); }
+  lines.push('','─────────────────────');
+  return lines.join('\n');
+}
+
+// ══════════════════════════════════════════════════════
+//  CLAUDE AI  — only in 'open' and 'done' states
+// ══════════════════════════════════════════════════════
+const FALLBACKS={
+  'precio':'Tenemos 3 planes: 🚀 Lanzamiento ($490K), 📈 Crecimiento ($890K) y 🤖 Pro+IA ($1.6M COP). ¿Te explico alguno?',
+  'tarda':'La mayoría de webs las entregamos en 3 a 5 días hábiles.',
+  'tiempo':'La mayoría de webs las entregamos en 3 a 5 días hábiles.',
+  'pago':'Cobramos 50% al inicio y 50% al entregar la web aprobada. Aceptamos transferencia, Nequi y tarjeta.',
+  'incluye':'Todos los planes incluyen diseño personalizado, móvil, WhatsApp y formulario. Los superiores añaden tienda, SEO y chatbot IA.',
+  'proceso':'1) Confirmas el plan. 2) Nos envías datos. 3) En 3-5 días te mostramos la web. 4) Ajustes. 5) ¡Publicamos!'
+};
+function askClaude(msg){
+  const key=getKey(); typing(true);
+  if(!key||!key.startsWith('sk-ant')){
+    const hit=Object.keys(FALLBACKS).find(k=>msg.toLowerCase().includes(k));
+    setTimeout(()=>{ typing(false); const r=hit?FALLBACKS[hit]:'Gracias por tu pregunta. Un asesor del equipo te responderá pronto.'; botMsg(r); history.push({role:'assistant',content:r}); },800);
+    return;
+  }
+  const s=loadSt();
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:(s.settings||{}).systemprompt||DEF_SETTINGS.systemprompt,messages:history.slice(-8)})
+  })
+  .then(r=>r.json())
+  .then(d=>{ typing(false); const r=d?.content?.[0]?.text||'¿Puedes reformular tu pregunta?'; botMsg(r); history.push({role:'assistant',content:r}); })
+  .catch(()=>{ typing(false); botMsg('Hubo un error de conexión. Por favor intenta de nuevo.'); });
+}
+
+// ══════════════════════════════════════════════════════
+//  ALERTS
+// ══════════════════════════════════════════════════════
+function checkAlert(text){
+  const s=loadSt();
+  const words=((s.settings||{}).alertwords||DEF_SETTINGS.alertwords).split(',').map(w=>w.trim().toLowerCase()).filter(Boolean);
+  const hit=words.find(w=>text.toLowerCase().includes(w));
+  if(hit) fireAlert('Palabra clave "'+hit+'" → "'+text.slice(0,80)+'"',{...lead});
+}
+function fireAlert(reason,snap){
+  const s=loadSt(),a=s.alerts||[];
+  a.unshift({id:Date.now(),reason,lead:snap,time:new Date().toLocaleString('es-CO'),read:false});
+  saveSt({alerts:a});
+}
+
+// ══════════════════════════════════════════════════════
+//  LEAD SAVE
+// ══════════════════════════════════════════════════════
+function saveLead(l){
+  const s=loadSt(),leads=s.leads||[],convs=s.conversations||[];
+  const entry={...l,id:Date.now()};
+  leads.unshift(entry); convs.unshift(entry);
+  saveSt({leads,conversations:convs});
+}
+
+// ══════════════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════════════
+function botMsg(html){ const d=document.createElement('div'); d.className='msg bot'; d.innerHTML='<div class="bub">'+html+'</div><div class="ts">'+now()+'</div>'; appendEl(d); }
+function userMsg(text){ const d=document.createElement('div'); d.className='msg usr'; d.innerHTML='<div class="bub">'+esc(text)+'</div><div class="ts">'+now()+'</div>'; appendEl(d); }
+function appendEl(el){ const m=document.getElementById('msgs'); m.appendChild(el); m.scrollTop=m.scrollHeight; }
+function typing(show){
+  if(show){ if(document.getElementById('tyEl')) return; const d=document.createElement('div'); d.className='twrap'; d.id='tyEl'; d.innerHTML='<div class="tbub"><div class="td"></div><div class="td"></div><div class="td"></div></div>'; appendEl(d); }
+  else{ const e=document.getElementById('tyEl'); if(e) e.remove(); }
+}
+function setOpts(opts){
+  const c=document.getElementById('opts'); c.innerHTML='';
+  opts.forEach(o=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o; b.onclick=function(){onInput(this.textContent);}; c.appendChild(b); });
+}
+function setInput(en){ const i=document.getElementById('inp'),b=document.getElementById('sndBtn'); i.disabled=!en; b.disabled=!en; i.placeholder=en?'Escribe tu respuesta...':'Selecciona una opción ↑'; }
+function clearField(){ document.getElementById('inp').value=''; }
+function updateProg(step,total){
+  const done=step>=total,pct=done?100:(total>0?Math.min(Math.round(step/total*100),99):0);
+  document.getElementById('pFill').style.width=pct+'%';
+  document.getElementById('pLabel').textContent=done?'¡Completado! 🎉':'Paso '+(step+1)+' de '+total;
+  document.getElementById('pPct').textContent=pct+'%';
+}
+function now(){ return new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}); }
+function esc(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ══════════════════════════════════════════════════════
+//  ADMIN SYNC  — when admin saves in another tab,
+//  reload init() on next panel open (or immediately if visible)
+// ══════════════════════════════════════════════════════
+window.addEventListener('storage',function(e){
+  if(e.key!==SK) return;
+  try{
+    const ns=JSON.parse(e.newValue||'{}');
+    if(panelOpen && chatState==='welcome'){
+      // Panel is open and at welcome — reinit immediately for fresh data
+      init();
+    } else if(!panelOpen){
+      // Panel closed — mark for reload next open (handled in button click)
+      loaded=0;
+    }
+  }catch(err){}
+});
+
+// ══════════════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════════════
+// Load on first open (not immediately, to avoid waste)
+// But init on load so welcome message is ready when panel opens
+loaded = Date.now();
+init();
+</script>
+</body>
+</html>
