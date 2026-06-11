@@ -11,7 +11,7 @@
 
   /* ── CONFIG ────────────────────────────── */
   var cfg   = w.WebAIConfig || {};
-  var SRC   = cfg.src   || 'chat-widget.html';
+  var SRC   = cfg.src   || 'chat-float.html';
   var COLOR = cfg.color || '#C8FF00';
   var POS   = cfg.pos   || 'right';          // 'right' | 'left'
   var RIGHT = POS === 'right' ? '20px' : 'auto';
@@ -28,7 +28,7 @@
       'bottom:88px;' +
       'right:' + RIGHT + ';' +
       'left:' + LEFT + ';' +
-      'width:370px;height:590px;' +
+      'width:270px;height:490px;' +
       'z-index:99998;' +
       'opacity:0;' +
       'transform:translateY(20px) scale(.97);' +
