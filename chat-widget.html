@@ -389,7 +389,7 @@ function finish(){
   botSay('🎉 ¡Perfecto'+(answers.nombre?', '+answers.nombre:'')+'! Ya tengo todo lo que necesito.\n\nResumen: '+P.emoji+' '+P.name+' · '+P.price+' COP.\n\nNuestro equipo te contactará muy pronto por WhatsApp para arrancar tu proyecto 🚀',()=>{
     const o=addHTML('','opts'); o.dataset.keep='1';
     let h='';
-    const wa=(settings.whatsapp||'').replace(/\D/g,'');
+    const wa='573215436013';
     if(wa) h+='<a class="wa" href="https://wa.me/'+wa+'?text='+encodeURIComponent('Hola, soy '+(answers.nombre||'')+' y acabo de completar el chat. Quiero el '+P.name+' para mi negocio '+(answers.negocio||''))+'" target="_blank" rel="noopener">📲 Hablar con un asesor ahora</a>';
     h+='<button class="opt alt" onclick="startFree()">🤖 Tengo otra pregunta</button>'+
        '<button class="opt alt" onclick="restartChat(true)">↺ Rehacer el chat</button>';
