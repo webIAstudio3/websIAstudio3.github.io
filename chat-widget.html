@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>webAI Studio — Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080D;--bg2:#0F1120;--bg3:#181B2E;--bg4:#1F2340;
+  --lime:#C8FF00;--sky:#4FC3F7;--violet:#7C5CFC;
+  --coral:#FF6B6B;--amber:#FFB347;--mint:#00E5A0;
+  --off:#F0F2FF;--muted:#7A7D95;--border:rgba(255,255,255,0.07);
+  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
+}
+html,body{height:100%}
+body{font-family:var(--fb);background:var(--bg);color:var(--off);display:flex;flex-direction:column;overflow:hidden}
+
+/* HEADER */
+.hd{background:var(--bg2);border-bottom:1px solid var(--border);padding:.8rem 1rem;display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.hd-mark{width:34px;height:34px;background:var(--lime);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:.95rem;color:var(--bg);flex-shrink:0}
+.hd-t{flex:1;min-width:0}
+.hd-name{font-family:var(--fh);font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd-st{font-size:.63rem;color:var(--mint);display:flex;align-items:center;gap:.3rem;margin-top:.1rem}
+.hd-dot{width:6px;height:6px;border-radius:50%;background:var(--mint);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hd-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:.72rem;padding:.3rem .55rem;font-family:var(--fb);transition:color .15s,border-color .15s;flex-shrink:0;line-height:1}
+.hd-btn:hover{color:var(--lime);border-color:rgba(200,255,0,.35)}
+.hd-x{font-size:.95rem;padding:.28rem .5rem}
+.hd-x:hover{color:var(--coral);border-color:rgba(255,107,107,.35)}
+
+/* CHAT */
+.chat{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.65rem;scroll-behavior:smooth}
+.chat::-webkit-scrollbar{width:4px}
+.chat::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+.msg{max-width:86%;padding:.62rem .85rem;border-radius:14px;font-size:.82rem;line-height:1.55;white-space:pre-wrap;word-break:break-word;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.m-bot{background:var(--bg3);border:1px solid var(--border);border-bottom-left-radius:4px;align-self:flex-start}
+.m-user{background:rgba(200,255,0,.13);border:1px solid rgba(200,255,0,.22);color:var(--off);border-bottom-right-radius:4px;align-self:flex-end}
+.m-sys{align-self:center;background:none;border:none;color:var(--muted);font-size:.66rem;padding:.1rem .4rem;text-align:center}
+
+/* typing */
+.typing{display:flex;gap:.28rem;align-self:flex-start;background:var(--bg3);border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:4px;padding:.7rem .85rem}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tp 1.1s infinite}
+.typing i:nth-child(2){animation-delay:.18s}.typing i:nth-child(3){animation-delay:.36s}
+@keyframes tp{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+/* OPTIONS */
+.opts{display:flex;flex-direction:column;gap:.42rem;align-self:flex-start;max-width:86%;animation:in .25s ease}
+.opt{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:.55rem .85rem;color:var(--off);font-size:.79rem;font-family:var(--fb);cursor:pointer;text-align:left;transition:border-color .15s,background .15s,transform .12s;line-height:1.4}
+.opt:hover{border-color:rgba(200,255,0,.45);background:var(--bg4);transform:translateX(3px)}
+.opt.alt{border-style:dashed;color:var(--muted);font-size:.74rem}
+.opt.alt:hover{color:var(--off)}
+
+/* PLAN CARD */
+.pcard{align-self:flex-start;max-width:92%;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:.95rem 1rem;animation:in .25s ease}
+.pcard.rec{border-color:rgba(200,255,0,.4);box-shadow:0 0 24px rgba(200,255,0,.06)}
+.pc-tag{display:inline-block;border-radius:999px;padding:.14rem .55rem;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;background:rgba(200,255,0,.12);color:var(--lime);margin-bottom:.45rem}
+.pc-name{font-family:var(--fh);font-size:.95rem;font-weight:800}
+.pc-price{font-family:var(--fh);font-size:1.35rem;font-weight:800;color:var(--lime);margin:.2rem 0 .45rem}
+.pc-price small{font-size:.62rem;color:var(--muted);font-weight:400;font-family:var(--fb)}
+.pc-feats{font-size:.72rem;color:var(--muted);line-height:1.8;margin-bottom:.6rem}
+.pc-feats b{color:var(--off);font-weight:500}
+
+/* INPUT */
+.foot{flex-shrink:0;border-top:1px solid var(--border);background:var(--bg2);padding:.6rem .8rem .7rem}
+.tools{display:flex;gap:.4rem;margin-bottom:.5rem;flex-wrap:wrap}
+.tool{background:none;border:1px solid var(--border);border-radius:999px;color:var(--muted);cursor:pointer;font-size:.64rem;padding:.24rem .6rem;font-family:var(--fb);transition:color .15s,border-color .15s;display:none}
+.tool.show{display:inline-block}
+.tool:hover{color:var(--lime);border-color:rgba(200,255,0,.35)}
+.tool.warn:hover{color:var(--amber);border-color:rgba(255,179,71,.4)}
+.irow{display:flex;gap:.5rem}
+.inp{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:.6rem .85rem;color:var(--off);font-size:.82rem;font-family:var(--fb);outline:none;transition:border-color .2s}
+.inp:focus{border-color:rgba(200,255,0,.4)}
+.inp:disabled{opacity:.45;cursor:not-allowed}
+.send{background:var(--lime);border:none;border-radius:12px;color:var(--bg);font-weight:700;font-family:var(--fh);font-size:.78rem;padding:0 1.05rem;cursor:pointer;transition:transform .12s,opacity .15s}
+.send:hover{transform:scale(1.04)}
+.send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.brand{font-size:.58rem;color:var(--muted);text-align:center;margin-top:.5rem;opacity:.7}
+.brand b{color:var(--lime);font-weight:600}
+.wa{display:inline-flex;align-items:center;gap:.4rem;background:var(--mint);color:var(--bg);border:none;border-radius:12px;padding:.55rem .95rem;font-size:.78rem;font-weight:700;font-family:var(--fb);cursor:pointer;text-decoration:none;transition:transform .12s;margin-top:.2rem}
+.wa:hover{transform:scale(1.03)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-mark">W</div>
+  <div class="hd-t">
+    <div class="hd-name" id="h-name">Asistente webAI</div>
+    <div class="hd-st"><span class="hd-dot"></span>En línea · responde al instante</div>
+  </div>
+  <button class="hd-btn" onclick="restartChat()" title="Rehacer el chat desde cero">↺ Rehacer</button>
+  <button class="hd-btn hd-x" id="btn-close" style="display:none" onclick="closeFloat()" title="Cerrar">✕</button>
+</header>
+
+<main class="chat" id="chat"></main>
+
+<footer class="foot">
+  <div class="tools">
+    <button class="tool warn" id="t-back" onclick="goBack()">↩ Corregir respuesta anterior</button>
+    <button class="tool" id="t-plans" onclick="backToPlans()">⇄ Volver a elegir plan</button>
+  </div>
+  <div class="irow">
+    <input class="inp" id="inp" placeholder="Escribe aquí..." autocomplete="off" disabled>
+    <button class="send" id="send" disabled onclick="submitText()">Enviar</button>
+  </div>
+  <div class="brand">Impulsado por <b>webAI Studio</b> · IA + diseño</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  STORAGE  (mismas claves que admin.html — sincronización total)
+// ══════════════════════════════════════════════════════════════════
+const SK='webai_state', AK='webai_apikey';
+function loadSt(){ try{return JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){return{};} }
+function saveSt(patch){ try{localStorage.setItem(SK,JSON.stringify({...loadSt(),...patch}));}catch(e){} }
+
+// ══════════════════════════════════════════════════════════════════
+//  ENTREGA DE LEADS  →  Correo (Formspree) + Panel (JSONBin)
+//  Pega aquí tus claves (instrucciones en el mensaje del asistente):
+// ══════════════════════════════════════════════════════════════════
+const LEAD_CONFIG = {
+  // 1) Formspree: correo instantáneo con cada lead
+  formspreeId: 'mnjylboy',
+  // 2) JSONBin: almacenamiento compartido para el panel.
+  //    Aquí va una ACCESS KEY de solo Read+Update (NO la Master Key),
+  //    porque este archivo es público. Aunque alguien la vea, no puede borrar leads.
+  jsonbinId:   '6a2ec58af5f4af5e29f0a5a1',
+  jsonbinKey:  '$2a$10$02OsCxQCcLs8.o54DESDk.bp8fztQqeaDSa3.u7OC2agGPlE2BmB.'
+};
+
+// Envía el lead a los servicios online (correo + panel)
+async function sendLeadOnline(lead){
+  // ── A) Correo vía Formspree ──
+  if(LEAD_CONFIG.formspreeId && !LEAD_CONFIG.formspreeId.startsWith('PEGA')){
+    try{
+      await fetch('https://formspree.io/f/'+LEAD_CONFIG.formspreeId,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({
+          _subject:'🟢 Nuevo lead webAI: '+(lead.nombre||'Cliente')+' — '+(lead.plan_elegido||''),
+          ...lead
+        })
+      });
+    }catch(e){ console.log('Formspree:',e.message); }
+  }
+  // ── B) Panel vía JSONBin ──
+  await pushToBin('lead',lead);
+}
+
+// Sube un lead o una alerta al bin compartido SIN borrar lo que ya existe.
+async function pushToBin(tipo,item){
+  if(!LEAD_CONFIG.jsonbinId || LEAD_CONFIG.jsonbinId.startsWith('PEGA')) return;
+  try{
+    const h={'Content-Type':'application/json','X-Master-Key':LEAD_CONFIG.jsonbinKey};
+    // leer estado actual del bin (leads + alerts)
+    let rec={leads:[],alerts:[]};
+    try{
+      const r=await fetch('https://api.jsonbin.io/v3/b/'+LEAD_CONFIG.jsonbinId+'/latest?t='+Date.now(),{headers:h});
+      if(r.ok){ const d=await r.json(); rec={leads:(d.record&&d.record.leads)||[],alerts:(d.record&&d.record.alerts)||[]}; }
+    }catch(e){}
+    if(tipo==='lead')  rec.leads.unshift(item);
+    if(tipo==='alert') rec.alerts.unshift(item);
+    await fetch('https://api.jsonbin.io/v3/b/'+LEAD_CONFIG.jsonbinId,{
+      method:'PUT',headers:h,body:JSON.stringify(rec)
+    });
+  }catch(e){ console.log('JSONBin:',e.message); }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  DEFAULTS  (deben coincidir con admin.html)
+// ══════════════════════════════════════════════════════════════════
+const DEF_FLOW = [
+  {id:1,key:'nombre',       question:'¿Cuál es tu nombre?',                                            type:'text',   options:[],isAlert:false},
+  {id:2,key:'negocio',      question:'¿Cuál es el nombre de tu negocio?',                              type:'text',   options:[],isAlert:false},
+  {id:3,key:'descripcion',  question:'¿A qué se dedica tu negocio?',                                   type:'text',   options:[],isAlert:false},
+  {id:4,key:'objetivo',     question:'¿Cuál es tu objetivo principal con la web?',                     type:'options',options:['Conseguir más clientes','Vender productos online','Mostrar mis servicios','Automatizar procesos'],isAlert:false},
+  {id:5,key:'tiene_web',    question:'¿Tienes página web actualmente?',                                type:'options',options:['Sí, tengo web','No tengo web'],isAlert:false},
+  {id:6,key:'vender_online',question:'¿Necesitas vender online?',                                      type:'options',options:['Sí, necesito vender online','No por ahora'],isAlert:false},
+  {id:7,key:'ia_interes',   question:'¿Te interesa incluir automatización o inteligencia artificial?', type:'options',options:['Sí, me interesa','No por ahora'],isAlert:false},
+  {id:8,key:'whatsapp',     question:'¿Cuál es tu número de WhatsApp para contactarte?',               type:'text',   options:[],isAlert:false}
+];
+const DEF_PLAN_QS = {
+  lanzamiento:[
+    {id:1,key:'d_logo',      question:'¿Tienes logo de tu negocio?',                                    type:'options',options:['Sí, tengo logo listo','No, necesito que me diseñen uno','Tengo uno pero quiero mejorarlo'],isAlert:false},
+    {id:2,key:'d_colores',   question:'¿Qué colores quieres en tu web? Describe o da referencias',     type:'text',   options:[],isAlert:false},
+    {id:3,key:'d_servicios', question:'¿Cuántos servicios o productos principales vas a mostrar?',     type:'options',options:['1 a 3','4 a 8','Más de 8'],isAlert:false},
+    {id:4,key:'d_fotos',     question:'¿Tienes fotos o imágenes de tu negocio o productos?',           type:'options',options:['Sí, tengo buenas fotos','Tengo algunas, no muy buenas','No tengo fotos aún'],isAlert:false},
+    {id:5,key:'d_cta',       question:'¿Cuál es la acción principal que quieres que haga el visitante?',type:'options',options:['Contactarme por WhatsApp','Llenar un formulario','Agendar una cita','Conocer mi negocio'],isAlert:false},
+    {id:6,key:'d_referencia',question:'¿Tienes alguna web de referencia? (link o descripción, o escribe "ninguna")',type:'text',options:[],isAlert:false}
+  ],
+  crecimiento:[
+    {id:1,key:'d_n_productos',question:'¿Cuántos productos o servicios tienes para publicar?',          type:'options',options:['Menos de 10','10 a 30','Más de 30'],isAlert:false},
+    {id:2,key:'d_pasarela',   question:'¿Necesitas recibir pagos directamente desde la web?',           type:'options',options:['Sí, quiero cobrar online','No por ahora','No estoy seguro/a'],isAlert:false},
+    {id:3,key:'d_seo',        question:'¿Qué tan importante es para ti aparecer en Google?',            type:'options',options:['Muy importante','Me interesa pero no es urgente','No lo necesito aún'],isAlert:false},
+    {id:4,key:'d_pixel',      question:'¿Haces o planeas publicidad en Facebook / Instagram?',          type:'options',options:['Sí, actualmente hago pauta','Planeo hacerlo pronto','No por ahora'],isAlert:false},
+    {id:5,key:'d_testimonios',question:'¿Tienes testimonios o reseñas de clientes para mostrar?',       type:'options',options:['Sí, tengo varios','Tengo pocos','No tengo aún'],isAlert:false},
+    {id:6,key:'d_referencia', question:'¿Hay alguna web que admires y que se parezca a lo que quieres?',type:'text',   options:[],isAlert:false}
+  ],
+  pro:[
+    {id:1,key:'d_automatizar',question:'¿Qué procesos quieres automatizar primero?',                    type:'options',options:['Atención al cliente 24/7','Captura y seguimiento de leads','Pedidos y pagos automáticos','Todos los anteriores'],isAlert:false},
+    {id:2,key:'d_faq',        question:'¿Cuáles son las 3 preguntas más frecuentes de tus clientes?',  type:'text',   options:[],isAlert:false},
+    {id:3,key:'d_mensajes',   question:'¿Cuántos mensajes de clientes recibes al día?',                 type:'options',options:['Menos de 10','Entre 10 y 50','Más de 50','Aún no lo sé'],isAlert:false},
+    {id:4,key:'d_emails',     question:'¿Necesitas correos automáticos para tus clientes?',             type:'options',options:['Sí, es clave','Me interesa pero no sé por dónde','No lo necesito aún'],isAlert:false},
+    {id:5,key:'d_embudo',     question:'¿Tienes un proceso de seguimiento de ventas definido?',         type:'options',options:['Sí, lo tengo claro','Tengo algo pero necesito mejorarlo','No, necesito ayuda'],isAlert:false},
+    {id:6,key:'d_bot_tono',   question:'¿Cómo quieres que responda el chatbot?',                       type:'options',options:['Formal y profesional','Amigable y cercano','Directo al punto','Que se adapte al cliente'],isAlert:false}
+  ]
+};
+const DEF_REC_RULES = [
+  {id:1,field:'ia_interes',   value:'Sí, me interesa',           plan:'pro',        priority:1},
+  {id:2,field:'objetivo',     value:'Automatizar procesos',       plan:'pro',        priority:2},
+  {id:3,field:'vender_online',value:'Sí, necesito vender online', plan:'crecimiento',priority:3},
+  {id:4,field:'objetivo',     value:'Vender productos online',    plan:'crecimiento',priority:4},
+  {id:5,field:'objetivo',     value:'Conseguir más clientes',     plan:'crecimiento',priority:5}
+];
+const DEF_SETTINGS = {
+  botname:'Asistente webAI', business:'webAI Studio',
+  welcome:'¡Hola! 👋 Soy el asesor virtual de webAI Studio. Te haré unas preguntas rápidas para recomendarte la solución web ideal para tu negocio. ¿Empezamos?',
+  systemprompt:'Eres un asesor comercial amigable de webAI Studio. Conoces los 3 planes: Lanzamiento ($490K), Crecimiento ($890K) y Pro+IA ($1.6M COP). Responde en español, de forma concisa.',
+  alertwords:'problema,queja,reclamo,no funciona,estafa,fraude,molesto,enojado,terrible,pésimo,malo,devolución,caro',
+  whatsapp:''
+};
+const PLANS = {
+  lanzamiento:{emoji:'🚀',name:'Plan Lanzamiento',price:'$490.000',feats:'<b>Landing page de 1 página</b> · diseño con tus colores y logo · dominio + hosting 1 año · formulario + botón WhatsApp · versión móvil · entrega en 5 días'},
+  crecimiento:{emoji:'📈',name:'Plan Crecimiento',price:'$890.000',feats:'<b>Todo el plan Lanzamiento</b> · hasta 5 secciones · pasarela de pagos · galería de productos · SEO optimizado · Analytics + Pixel FB · testimonios · 3 meses de soporte'},
+  pro:{emoji:'🤖',name:'Plan Pro + IA',price:'$1.600.000',feats:'<b>Todo el plan Crecimiento</b> · chatbot IA personalizado · tienda online completa · email marketing · automatización de leads · reportes mensuales · soporte prioritario 6 meses'}
+};
+
+// ══════════════════════════════════════════════════════════════════
+//  ESTADO DEL CHAT
+// ══════════════════════════════════════════════════════════════════
+let flow=[], planQs={}, recRules=[], recDefault='lanzamiento', settings={};
+let CONFIG_JSON=null, lastSeen=0;
+let phase='welcome';          // welcome | diag | rec | plan | done | free
+let qi=0;                     // índice de pregunta actual
+let plan=null;                // plan elegido
+let answers={};               // respuestas del cliente
+let history=[];               // pila para "corregir respuesta"
+let convId=null, leadSaved=false, freeMsgs=[];
+const chat=document.getElementById('chat');
+const inp=document.getElementById('inp');
+const sendBtn=document.getElementById('send');
+
+function loadConfig(){
+  const s=loadSt();
+  const j=CONFIG_JSON||{};
+  // El admin del MISMO navegador manda si guardó algo más reciente que lo publicado;
+  // para los visitantes manda chat-config.json (publicado desde el admin).
+  const useLocal = !!s._lastSaved && (!j.published || s._lastSaved>=j.published);
+  const src = useLocal ? s : j;
+  flow      = (src.flow&&src.flow.length)?src.flow:JSON.parse(JSON.stringify(DEF_FLOW));
+  recRules  = (src.recRules&&src.recRules.length)?src.recRules:JSON.parse(JSON.stringify(DEF_REC_RULES));
+  recDefault= src.recDefault||'lanzamiento';
+  settings  = src.settings?{...DEF_SETTINGS,...src.settings}:{...DEF_SETTINGS};
+  const sq=src.planQs||{};
+  planQs={
+    lanzamiento:(sq.lanzamiento&&sq.lanzamiento.length)?sq.lanzamiento:JSON.parse(JSON.stringify(DEF_PLAN_QS.lanzamiento)),
+    crecimiento:(sq.crecimiento&&sq.crecimiento.length)?sq.crecimiento:JSON.parse(JSON.stringify(DEF_PLAN_QS.crecimiento)),
+    pro:(sq.pro&&sq.pro.length)?sq.pro:JSON.parse(JSON.stringify(DEF_PLAN_QS.pro))
+  };
+  lastSeen = Math.max(s._lastSaved||0, j.published||0);
+  document.getElementById('h-name').textContent=settings.botname||'Asistente webAI';
+}
+
+// Sincronización en vivo con el admin (misma web, mismo navegador):
+function refreshIfChanged(){
+  const s=loadSt();
+  const stamp=Math.max(s._lastSaved||0,(CONFIG_JSON&&CONFIG_JSON.published)||0);
+  if(stamp>lastSeen && phase==='welcome'){ loadConfig(); chat.innerHTML=''; welcome(); }
+  else if(stamp>lastSeen){ lastSeen=stamp; loadConfig0Soft(); }
+}
+function loadConfig0Soft(){ // a mitad de conversación: actualiza nombre y settings sin romper el flujo
+  const s=loadSt();
+  if(s.settings){ settings={...DEF_SETTINGS,...s.settings}; document.getElementById('h-name').textContent=settings.botname||'Asistente webAI'; }
+}
+window.addEventListener('storage',e=>{ if(e.key===SK) refreshIfChanged(); });
+setInterval(refreshIfChanged,3000);
+
+// ══════════════════════════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════════════════════════
+function esc(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function scroll(){ chat.scrollTop=chat.scrollHeight; }
+function addMsg(txt,who){ const d=document.createElement('div'); d.className='msg m-'+who; d.textContent=txt; chat.appendChild(d); scroll(); return d; }
+function addSys(txt){ const d=document.createElement('div'); d.className='msg m-sys'; d.textContent=txt; chat.appendChild(d); scroll(); }
+function addHTML(html,cls){ const d=document.createElement('div'); d.className=cls; d.innerHTML=html; chat.appendChild(d); scroll(); return d; }
+function clearOpts(){ chat.querySelectorAll('.opts,.pcard').forEach(e=>{ if(e.dataset.keep!=='1') e.remove(); }); }
+function typing(cb,ms){
+  const t=document.createElement('div'); t.className='typing'; t.innerHTML='<i></i><i></i><i></i>';
+  chat.appendChild(t); scroll();
+  setTimeout(()=>{ t.remove(); cb(); },ms||650);
+}
+function botSay(txt,cb){ typing(()=>{ addMsg(txt,'bot'); if(cb)cb(); }); }
+function setInput(on,ph){
+  inp.disabled=!on; sendBtn.disabled=!on;
+  inp.placeholder=ph||'Escribe aquí...';
+  if(on) setTimeout(()=>inp.focus(),60);
+}
+function updateTools(){
+  document.getElementById('t-back').classList.toggle('show', history.length>0 && (phase==='diag'||phase==='plan'||phase==='rec'));
+  document.getElementById('t-plans').classList.toggle('show', phase==='plan'||phase==='done');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  FLUJO
+// ══════════════════════════════════════════════════════════════════
+function welcome(){
+  phase='welcome'; qi=0; plan=null; answers={}; history=[]; leadSaved=false; freeMsgs=[];
+  setInput(false); updateTools();
+  botSay(settings.welcome||DEF_SETTINGS.welcome,()=>{
+    const o=addHTML('','opts');
+    o.innerHTML='<button class="opt" onclick="startChat()">✨ ¡Sí, empezamos!</button>'+
+                '<button class="opt alt" onclick="jumpToPlans()">Ya conozco los planes, quiero elegir uno →</button>';
+  });
+}
+function startChat(){
+  clearOpts(); addMsg('¡Sí, empezamos!','user');
+  registerConv();
+  phase='diag'; qi=0; updateTools();
+  setTimeout(askDiag,350);
+}
+function jumpToPlans(){
+  clearOpts(); addMsg('Quiero elegir un plan directamente','user');
+  registerConv();
+  setTimeout(showAllPlans,350);
+}
+function registerConv(){
+  if(convId) return;
+  convId='c'+Date.now();
+  const s=loadSt(); const convs=s.conversations||[];
+  convs.push({id:convId,started:new Date().toISOString()});
+  saveSt({conversations:convs});
+}
+
+// — Fase diagnóstico —
+function askDiag(){
+  phase='diag'; updateTools();
+  if(qi>=flow.length){ recommend(); return; }
+  const q=flow[qi];
+  botSay(q.question,()=>{
+    if(q.type==='options'&&q.options&&q.options.length){
+      setInput(false);
+      const o=addHTML('','opts');
+      o.innerHTML=q.options.map(op=>'<button class="opt" onclick="answer(this.textContent)">'+esc(op)+'</button>').join('');
+    } else setInput(true,'Escribe tu respuesta...');
+  });
+}
+function answer(val){
+  val=(val||'').trim(); if(!val) return;
+  clearOpts(); setInput(false);
+  const list = phase==='diag'?flow:(planQs[plan]||[]);
+  const q=list[qi]; if(!q) return;
+  addMsg(val,'user');
+  history.push({phase,qi,key:q.key,msgIndex:chat.children.length-2,plan});
+  answers[q.key]=val;
+  checkAlertWords(val,q);
+  qi++;
+  setTimeout(phase==='diag'?askDiag:askPlanQ,420);
+}
+function submitText(){ if(!inp.disabled){ const v=inp.value; inp.value=''; if(phase==='free') freeAsk(v); else answer(v); } }
+inp.addEventListener('keydown',e=>{ if(e.key==='Enter') submitText(); });
+
+// — Recomendación —
+function evalPlan(){
+  for(const r of recRules){
+    const a=(answers[r.field]||'').toString().toLowerCase();
+    if(r.value && a && a.includes((r.value||'').toLowerCase())) return r.plan;
+  }
+  return recDefault||'lanzamiento';
+}
+function recommend(){
+  phase='rec'; updateTools(); setInput(false);
+  const p=evalPlan(); const P=PLANS[p]||PLANS.lanzamiento;
+  botSay('¡Listo'+(answers.nombre?', '+answers.nombre:'')+'! 🎯 Según lo que me contaste, este es el plan ideal para tu negocio:',()=>{
+    const c=addHTML('','pcard rec');
+    c.innerHTML='<span class="pc-tag">Recomendado para ti</span>'+
+      '<div class="pc-name">'+P.emoji+' '+esc(P.name)+'</div>'+
+      '<div class="pc-price">'+P.price+' <small>COP · pago único</small></div>'+
+      '<div class="pc-feats">'+P.feats+'</div>';
+    const o=addHTML('','opts');
+    o.innerHTML='<button class="opt" onclick="pickPlan(\''+p+'\',true)">✓ Continuar con este plan</button>'+
+                '<button class="opt alt" onclick="showAllPlans()">Ver los 3 planes y comparar →</button>';
+  });
+}
+function showAllPlans(){
+  clearOpts(); phase='rec'; updateTools(); setInput(false);
+  botSay('Estos son nuestros 3 planes. Elige el que mejor te convenga 👇',()=>{
+    Object.keys(PLANS).forEach(k=>{
+      const P=PLANS[k];
+      const c=addHTML('','pcard');
+      c.innerHTML='<div class="pc-name">'+P.emoji+' '+esc(P.name)+'</div>'+
+        '<div class="pc-price">'+P.price+' <small>COP</small></div>'+
+        '<div class="pc-feats">'+P.feats+'</div>'+
+        '<button class="opt" style="width:100%" onclick="pickPlan(\''+k+'\',false)">Elegir '+esc(P.name)+'</button>';
+    });
+  });
+}
+function pickPlan(p,fromRec){
+  clearOpts();
+  plan=p; const P=PLANS[p];
+  addMsg('Elijo el '+P.name,'user');
+  answers.plan_elegido=P.name;
+  phase='plan'; qi=0; updateTools();
+  botSay('¡Excelente elección! '+P.emoji+' Ahora unas preguntas rápidas para configurar tu '+P.name+'. Si cambias de opinión, abajo puedes volver a elegir plan en cualquier momento.',()=>setTimeout(askPlanQ,250));
+}
+function backToPlans(){
+  // limpia respuestas de la fase de plan y regresa al comparador
+  const keys=(planQs[plan]||[]).map(q=>q.key);
+  keys.forEach(k=>delete answers[k]);
+  delete answers.plan_elegido;
+  history=history.filter(h=>h.phase!=='plan');
+  plan=null; leadSaved=false;
+  addSys('— Volviste a la selección de plan —');
+  showAllPlans();
+}
+
+// — Preguntas del plan —
+function askPlanQ(){
+  phase='plan'; updateTools();
+  const list=planQs[plan]||[];
+  if(qi>=list.length){ finish(); return; }
+  const q=list[qi];
+  botSay(q.question,()=>{
+    if(q.type==='options'&&q.options&&q.options.length){
+      setInput(false);
+      const o=addHTML('','opts');
+      o.innerHTML=q.options.map(op=>'<button class="opt" onclick="answer(this.textContent)">'+esc(op)+'</button>').join('');
+    } else setInput(true,'Escribe tu respuesta...');
+  });
+}
+
+// — Cierre: guarda lead, alertas y muestra resumen —
+function finish(){
+  phase='done'; updateTools(); setInput(false);
+  saveLead();
+  const P=PLANS[plan];
+  botSay('🎉 ¡Perfecto'+(answers.nombre?', '+answers.nombre:'')+'! Ya tengo todo lo que necesito.\n\nResumen: '+P.emoji+' '+P.name+' · '+P.price+' COP.\n\nNuestro equipo te contactará muy pronto por WhatsApp para arrancar tu proyecto 🚀',()=>{
+    const o=addHTML('','opts'); o.dataset.keep='1';
+    let h='';
+    const wa=(settings.whatsapp||'').replace(/\D/g,'');
+    if(wa) h+='<a class="wa" href="https://wa.me/'+wa+'?text='+encodeURIComponent('Hola, soy '+(answers.nombre||'')+' y acabo de completar el chat. Quiero el '+P.name+' para mi negocio '+(answers.negocio||''))+'" target="_blank" rel="noopener">📲 Hablar con un asesor ahora</a>';
+    h+='<button class="opt alt" onclick="startFree()">🤖 Tengo otra pregunta</button>'+
+       '<button class="opt alt" onclick="restartChat(true)">↺ Rehacer el chat</button>';
+    o.innerHTML=h;
+  });
+}
+function saveLead(){
+  if(leadSaved) return; leadSaved=true;
+  const lead={id:'l'+Date.now(),...answers,plan_elegido:answers.plan_elegido||(plan&&PLANS[plan]?PLANS[plan].name:''),timestamp:new Date().toISOString()};
+  // guarda local (por si pruebas en el mismo navegador)
+  const s=loadSt();
+  const leads=s.leads||[]; leads.unshift(lead);
+  const convs=(s.conversations||[]).map(c=>c.id===convId?{...c,completed:true}:c);
+  saveSt({leads,conversations:convs});
+  // envía online → llega a tu correo y a tu panel
+  sendLeadOnline(lead);
+}
+function checkAlertWords(text,q){
+  const words=(settings.alertwords||'').split(',').map(w=>w.trim().toLowerCase()).filter(Boolean);
+  const t=(text||'').toLowerCase();
+  const hit=words.find(w=>t.includes(w));
+  const triggered = hit || (q&&q.isAlert);
+  if(!triggered) return;
+  const s=loadSt(); const alerts=s.alerts||[];
+  const alerta={
+    id:'a'+Date.now(),
+    reason: hit ? ('El cliente mencionó "'+hit+'": “'+text.slice(0,120)+'”') : ('Respuesta marcada como alerta: “'+text.slice(0,120)+'”'),
+    time:new Date().toLocaleString('es-CO'),
+    lead:{nombre:answers.nombre||'Cliente',whatsapp:answers.whatsapp||''},
+    read:false
+  };
+  alerts.unshift(alerta);
+  saveSt({alerts});
+  pushToBin('alert',alerta); // sincroniza la alerta con el panel
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  CORREGIR RESPUESTA / REHACER
+// ══════════════════════════════════════════════════════════════════
+function goBack(){
+  const last=history.pop();
+  if(!last) return;
+  delete answers[last.key];
+  while(chat.children.length>last.msgIndex) chat.removeChild(chat.lastChild);
+  phase=last.phase; qi=last.qi; plan=last.plan;
+  addSys('— Corrigiendo la respuesta anterior —');
+  updateTools();
+  setTimeout(phase==='diag'?askDiag:askPlanQ,250);
+}
+function restartChat(skipConfirm){
+  if(!skipConfirm && phase!=='welcome' && !confirm('¿Rehacer el chat desde el inicio? Se borrarán las respuestas de esta conversación.')) return;
+  convId=null;
+  chat.innerHTML='';
+  loadConfig();
+  welcome();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  PREGUNTA LIBRE (Claude) — usa la API key guardada en el admin
+// ══════════════════════════════════════════════════════════════════
+function startFree(){
+  phase='free'; updateTools();
+  botSay('¡Claro! Pregúntame lo que quieras sobre nuestros planes y servicios ✍️',()=>setInput(true,'Escribe tu pregunta...'));
+}
+async function freeAsk(txt){
+  txt=(txt||'').trim(); if(!txt) return;
+  addMsg(txt,'user'); setInput(false);
+  checkAlertWords(txt,null);
+  freeMsgs.push({role:'user',content:txt});
+  const key=localStorage.getItem(AK)||'';
+  if(!key||!key.startsWith('sk-ant')){
+    botSay('Por ahora no puedo responder preguntas abiertas, pero un asesor humano puede ayudarte de inmediato por WhatsApp 📲',()=>setInput(true,'Escribe tu pregunta...'));
+    return;
+  }
+  const t=document.createElement('div'); t.className='typing'; t.innerHTML='<i></i><i></i><i></i>'; chat.appendChild(t); scroll();
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,system:(settings.systemprompt||DEF_SETTINGS.systemprompt)+' Datos del cliente: '+JSON.stringify(answers),messages:freeMsgs.slice(-10)})
+    });
+    const data=await r.json(); t.remove();
+    const out=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n')||'No pude generar respuesta, intenta de nuevo.';
+    freeMsgs.push({role:'assistant',content:out});
+    addMsg(out,'bot');
+  }catch(e){
+    t.remove();
+    addMsg('Hubo un problema de conexión. Intenta de nuevo o escríbenos por WhatsApp 📲','bot');
+  }
+  setInput(true,'Escribe tu pregunta...');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  MODO FLOTANTE (cuando se abre desde chatbot-float.js)
+// ══════════════════════════════════════════════════════════════════
+const isFloat=new URLSearchParams(location.search).get('float')==='1';
+if(isFloat) document.getElementById('btn-close').style.display='inline-block';
+function closeFloat(){ try{parent.postMessage('webai-close','*');}catch(e){} }
+
+// INIT — intenta leer chat-config.json (publicado desde el admin y subido al repo)
+(async function(){
+  try{
+    const r=await fetch('chat-config.json?t='+Date.now(),{cache:'no-store'});
+    if(r.ok) CONFIG_JSON=await r.json();
+  }catch(e){}
+  loadConfig();
+  welcome();
+})();
+</script>
+</body>
+</html>
