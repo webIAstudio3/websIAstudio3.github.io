@@ -1,0 +1,821 @@
+{
+  "flow": [
+    {
+      "id": 1,
+      "key": "nombre",
+      "question": "Para empezar, ¿cuál es tu nombre?",
+      "type": "text",
+      "options": [],
+      "isAlert": false
+    },
+    {
+      "id": 2,
+      "key": "negocio",
+      "question": "¿Cuál es el nombre de tu negocio?",
+      "type": "text",
+      "options": [],
+      "isAlert": false
+    },
+    {
+      "id": 3,
+      "key": "sector",
+      "question": "¿A qué se dedica tu negocio?",
+      "type": "select_otro",
+      "options": [
+        "Estética",
+        "Odontología",
+        "Abogado / jurídico",
+        "Inmobiliaria",
+        "Restaurante",
+        "Tienda online",
+        "Constructora",
+        "Centro de salud",
+        "Coach",
+        "Academia",
+        "Otro"
+      ],
+      "isAlert": false
+    },
+    {
+      "id": 4,
+      "key": "objetivo",
+      "question": "¿Qué es lo MÁS importante que quieres lograr?",
+      "type": "options",
+      "options": [
+        "Tener presencia profesional en internet",
+        "Conseguir más clientes",
+        "Vender productos online",
+        "Recibir reservas o citas",
+        "Automatizar la atención y las ventas"
+      ],
+      "isAlert": false
+    },
+    {
+      "id": 5,
+      "key": "tiene_web",
+      "question": "¿Ya tienes página web?",
+      "type": "options",
+      "options": [
+        "Sí",
+        "No"
+      ],
+      "isAlert": false
+    },
+    {
+      "id": 6,
+      "key": "volumen_mes",
+      "question": "¿Cuántos clientes o pedidos recibes al mes aproximadamente?",
+      "type": "options",
+      "options": [
+        "Menos de 10",
+        "10 a 30",
+        "30 a 100",
+        "Más de 100"
+      ],
+      "isAlert": false
+    },
+    {
+      "id": 7,
+      "key": "mensajes",
+      "question": "¿Cuántos mensajes de clientes atiendes por semana?",
+      "type": "options",
+      "options": [
+        "Pocos, los manejo bien",
+        "Bastantes, a veces no alcanzo",
+        "Muchísimos, se me escapan clientes"
+      ],
+      "isAlert": false
+    },
+    {
+      "id": 8,
+      "key": "etapa",
+      "question": "¿En qué etapa está tu negocio?",
+      "type": "options",
+      "options": [
+        "Apenas estoy empezando",
+        "Funcionando, quiero crecer",
+        "Establecido, quiero escalar y automatizar"
+      ],
+      "isAlert": false
+    },
+    {
+      "id": 9,
+      "key": "urgencia",
+      "question": "¿Qué tan pronto quieres lanzar?",
+      "type": "options",
+      "options": [
+        "Esta semana",
+        "Este mes",
+        "Próximos 3 meses",
+        "Solo estoy investigando"
+      ],
+      "isAlert": false
+    },
+    {
+      "id": 10,
+      "key": "whatsapp",
+      "question": "Por último, ¿cuál es tu número de WhatsApp para contactarte?",
+      "type": "text",
+      "options": [],
+      "isAlert": false
+    }
+  ],
+  "planQs": {
+    "lanzamiento": [
+      {
+        "id": 1,
+        "key": "d_nombre_comercial",
+        "question": "¿Cuál es el nombre exacto de tu marca o negocio tal como quieres que aparezca en la página?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 2,
+        "key": "d_eslogan",
+        "question": "¿Tienes un eslogan o frase corta que represente tu negocio? (si no tienes, escribe \"no\" y te ayudo a crearlo)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 3,
+        "key": "d_descripcion",
+        "question": "Describe tu negocio en una o dos frases (esto será el texto principal de tu página).",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 4,
+        "key": "d_servicios_lista",
+        "question": "¿Cuáles son los servicios o productos que quieres mostrar? (sepáralos con comas)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 5,
+        "key": "d_diferenciador",
+        "question": "¿Por qué deberían elegirte a ti y no a la competencia? (tu mayor ventaja)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 6,
+        "key": "d_cta_principal",
+        "question": "¿Qué quieres que haga el visitante al entrar a tu página?",
+        "type": "options",
+        "options": [
+          "Escribirme por WhatsApp",
+          "Llamarme",
+          "Llenar un formulario",
+          "Agendar una cita",
+          "Ver mis productos"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 7,
+        "key": "d_logo",
+        "question": "¿Tienes logo?",
+        "type": "options",
+        "options": [
+          "Sí, lo tengo en buena calidad",
+          "Tengo uno pero quiero mejorarlo",
+          "No tengo, necesito que me ayuden"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 8,
+        "key": "d_colores",
+        "question": "¿Qué colores quieres en tu página? (describe o da los códigos; si no sabes, escribe \"los que combinen con mi marca\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 9,
+        "key": "d_estilo",
+        "question": "¿Qué estilo visual prefieres para tu página?",
+        "type": "options",
+        "options": [
+          "Moderno y minimalista",
+          "Elegante y sofisticado",
+          "Colorido y llamativo",
+          "Cálido y cercano",
+          "Profesional y serio"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 10,
+        "key": "d_fotos",
+        "question": "¿Tienes fotografías propias de tu negocio, productos o equipo?",
+        "type": "options",
+        "options": [
+          "Sí, tengo buenas fotos",
+          "Tengo algunas",
+          "No tengo, usar imágenes profesionales"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 11,
+        "key": "d_secciones",
+        "question": "¿Qué quieres que incluya tu página? (elige todas las que apliquen)",
+        "type": "multi",
+        "options": [
+          "Sobre mí / mi historia",
+          "Lista de servicios",
+          "Galería de fotos",
+          "Preguntas frecuentes",
+          "Testimonios",
+          "Horarios y ubicación"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 12,
+        "key": "d_contacto",
+        "question": "¿Qué medios de contacto quieres mostrar? (elige los que uses)",
+        "type": "multi",
+        "options": [
+          "WhatsApp",
+          "Instagram",
+          "Facebook",
+          "Correo",
+          "Teléfono",
+          "Dirección física"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 13,
+        "key": "d_whatsapp_negocio",
+        "question": "¿Cuál es el número de WhatsApp donde quieres recibir a tus clientes desde la página?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 14,
+        "key": "d_chat_faq",
+        "question": "El plan incluye un chat de IA. ¿Cuáles son las 3 preguntas que más te hacen tus clientes? (así el chat sabrá responderlas)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 15,
+        "key": "d_referencia",
+        "question": "¿Tienes alguna página web de referencia que te guste? (pega el link o escribe \"ninguna\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      }
+    ],
+    "crecimiento": [
+      {
+        "id": 1,
+        "key": "d_nombre_comercial",
+        "question": "¿Cuál es el nombre exacto de tu marca tal como debe aparecer en la web?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 2,
+        "key": "d_eslogan",
+        "question": "¿Tienes un eslogan o frase de marca? (si no, escribe \"no\" y te ayudo)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 3,
+        "key": "d_descripcion",
+        "question": "Describe tu negocio en una o dos frases.",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 4,
+        "key": "d_servicios_lista",
+        "question": "Lista todos los servicios o productos que quieres mostrar (sepáralos con comas).",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 5,
+        "key": "d_diferenciador",
+        "question": "¿Por qué deberían elegirte a ti y no a la competencia?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 6,
+        "key": "d_cliente_ideal",
+        "question": "¿Quién es tu cliente ideal? (ej: mujeres 25-45, empresas, familias)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 7,
+        "key": "d_cobertura",
+        "question": "¿En qué ciudades o países ofreces tus servicios?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 8,
+        "key": "d_logo",
+        "question": "¿Tienes logo?",
+        "type": "options",
+        "options": [
+          "Sí, en buena calidad",
+          "Tengo uno pero quiero mejorarlo",
+          "No tengo, necesito ayuda"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 9,
+        "key": "d_colores",
+        "question": "¿Qué colores quieres en tu web? (describe o da códigos; o escribe \"los que combinen con mi marca\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 10,
+        "key": "d_estilo",
+        "question": "¿Qué estilo visual prefieres?",
+        "type": "options",
+        "options": [
+          "Moderno y minimalista",
+          "Elegante y sofisticado",
+          "Colorido y llamativo",
+          "Cálido y cercano",
+          "Profesional y serio"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 11,
+        "key": "d_fotos",
+        "question": "¿Tienes fotografías propias de tu negocio o productos?",
+        "type": "options",
+        "options": [
+          "Sí, buenas fotos",
+          "Tengo algunas",
+          "No tengo, usar profesionales"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 12,
+        "key": "d_secciones",
+        "question": "¿Qué secciones quieres en tu web? (elige todas las que apliquen)",
+        "type": "multi",
+        "options": [
+          "Inicio",
+          "Sobre nosotros",
+          "Servicios",
+          "Galería de productos",
+          "Testimonios",
+          "Preguntas frecuentes",
+          "Blog",
+          "Contacto y ubicación"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 13,
+        "key": "d_testimonios",
+        "question": "¿Tienes testimonios o reseñas de clientes para mostrar?",
+        "type": "options",
+        "options": [
+          "Sí, varios",
+          "Tengo algunos",
+          "No tengo aún"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 14,
+        "key": "d_seo_keywords",
+        "question": "¿Con qué palabras buscan tus clientes en Google lo que ofreces? (ej: \"restaurante italiano Armenia\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 15,
+        "key": "d_cta",
+        "question": "¿Qué acción principal quieres que haga el visitante?",
+        "type": "options",
+        "options": [
+          "Escribirme a WhatsApp",
+          "Reservar cita",
+          "Comprar",
+          "Solicitar cotización"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 16,
+        "key": "d_contacto",
+        "question": "¿Qué medios de contacto quieres mostrar? (elige los que uses)",
+        "type": "multi",
+        "options": [
+          "WhatsApp",
+          "Instagram",
+          "Facebook",
+          "Correo",
+          "Teléfono",
+          "Dirección física"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 17,
+        "key": "d_whatsapp_negocio",
+        "question": "¿Cuál es el número de WhatsApp donde atenderás a tus clientes?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 18,
+        "key": "d_bot_tono",
+        "question": "Tu plan incluye un BOT de WhatsApp. ¿Cómo quieres que hable con tus clientes?",
+        "type": "options",
+        "options": [
+          "Formal y profesional",
+          "Amigable y cercano",
+          "Directo y breve",
+          "Que se adapte al cliente"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 19,
+        "key": "d_bot_faq",
+        "question": "¿Cuáles son las preguntas más frecuentes de tus clientes? (el bot las responderá; sepáralas con comas)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 20,
+        "key": "d_bot_servicios_precios",
+        "question": "¿Qué servicios/productos vende el bot y a qué precio? (ej: \"Corte $20.000, Tinte $50.000\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 21,
+        "key": "d_bot_pago",
+        "question": "¿Qué medios de pago quieres que el bot ofrezca a tus clientes? (elige los que uses)",
+        "type": "multi",
+        "options": [
+          "Nequi",
+          "Bancolombia",
+          "Daviplata",
+          "Efectivo",
+          "Tarjeta",
+          "Otro"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 22,
+        "key": "d_referencia",
+        "question": "¿Tienes alguna web de referencia que te guste? (pega el link o escribe \"ninguna\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      }
+    ],
+    "pro": [
+      {
+        "id": 1,
+        "key": "d_nombre_comercial",
+        "question": "¿Cuál es el nombre exacto de tu marca tal como debe aparecer en la web?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 2,
+        "key": "d_descripcion",
+        "question": "Describe tu negocio en una o dos frases.",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 3,
+        "key": "d_diferenciador",
+        "question": "¿Por qué deberían elegirte a ti y no a la competencia?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 4,
+        "key": "d_cliente_ideal",
+        "question": "¿Quién es tu cliente ideal? (ej: mujeres 25-45, empresas, familias)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 5,
+        "key": "d_logo",
+        "question": "¿Tienes logo?",
+        "type": "options",
+        "options": [
+          "Sí, en buena calidad",
+          "Tengo uno pero quiero mejorarlo",
+          "No tengo, necesito ayuda"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 6,
+        "key": "d_colores",
+        "question": "¿Qué colores e identidad visual quieres? (describe, da códigos, o escribe \"los de mi marca\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 7,
+        "key": "d_estilo",
+        "question": "¿Qué estilo visual prefieres?",
+        "type": "options",
+        "options": [
+          "Moderno y minimalista",
+          "Elegante y sofisticado",
+          "Colorido y llamativo",
+          "Cálido y cercano",
+          "Profesional y serio"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 8,
+        "key": "d_secciones",
+        "question": "Tu web tendrá varias secciones. ¿Cuáles quieres? (elige todas)",
+        "type": "multi",
+        "options": [
+          "Inicio",
+          "Sobre nosotros",
+          "Servicios",
+          "Tienda / catálogo",
+          "Galería",
+          "Testimonios",
+          "Blog",
+          "Preguntas frecuentes",
+          "Contacto y ubicación"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 9,
+        "key": "d_tienda_productos",
+        "question": "Para tu tienda/catálogo: ¿cuántos productos tendrás y de qué tipo? (ej: \"30 productos de ropa\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 10,
+        "key": "d_pasarela",
+        "question": "¿Qué medios de pago quieres integrar en la tienda? (elige todos)",
+        "type": "multi",
+        "options": [
+          "Tarjeta (Wompi/Mercado Pago)",
+          "PSE",
+          "Nequi",
+          "Bancolombia",
+          "Daviplata",
+          "Contra entrega"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 11,
+        "key": "d_automatizar",
+        "question": "¿Qué procesos quieres automatizar? (elige todos los que apliquen)",
+        "type": "multi",
+        "options": [
+          "Atención al cliente 24/7",
+          "Agendamiento de citas",
+          "Ventas y cotizaciones",
+          "Seguimiento de leads",
+          "Soporte post-venta",
+          "Recordatorios de pago"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 12,
+        "key": "d_canales",
+        "question": "¿Por dónde llegan actualmente tus clientes? (elige todos)",
+        "type": "multi",
+        "options": [
+          "WhatsApp",
+          "Instagram",
+          "Facebook",
+          "Página web",
+          "Correo",
+          "Llamadas"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 13,
+        "key": "d_volumen",
+        "question": "¿Cuántas conversaciones de clientes recibes por semana?",
+        "type": "options",
+        "options": [
+          "Menos de 50",
+          "50-200",
+          "Más de 200"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 14,
+        "key": "d_bot_tono",
+        "question": "¿Cómo quieres que hable tu asistente de IA con los clientes?",
+        "type": "options",
+        "options": [
+          "Formal y profesional",
+          "Amigable y cercano",
+          "Directo y breve",
+          "Que se adapte al cliente"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 15,
+        "key": "d_bot_faq",
+        "question": "¿Qué preguntas responde constantemente tu negocio? (entrenan a tu IA; sepáralas con comas)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 16,
+        "key": "d_bot_servicios_precios",
+        "question": "¿Qué servicios/productos vende tu IA y a qué precios? (ej: \"Consulta $80.000, Plan mensual $200.000\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 17,
+        "key": "d_seguimiento",
+        "question": "Para el seguimiento automático de leads: ¿qué pasos das hoy para cerrar una venta? (descríbelo, aunque sea informal)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 18,
+        "key": "d_integraciones",
+        "question": "¿Qué herramientas usas actualmente? (elige todas)",
+        "type": "multi",
+        "options": [
+          "Google Calendar",
+          "Google Sheets",
+          "CRM",
+          "Shopify",
+          "WooCommerce",
+          "Mailchimp / email",
+          "Ninguna"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 19,
+        "key": "d_contenido_mensual",
+        "question": "El plan incluye gestión de contenido mensual. ¿Qué te gustaría actualizar cada mes? (ej: promociones, productos, blog)",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 20,
+        "key": "d_reportes",
+        "question": "¿Qué resultados te interesa medir en tus reportes? (elige todos)",
+        "type": "multi",
+        "options": [
+          "Cantidad de leads",
+          "Ventas cerradas",
+          "Conversaciones atendidas",
+          "Visitas a la web",
+          "Productos más vendidos"
+        ],
+        "isAlert": false
+      },
+      {
+        "id": 21,
+        "key": "d_whatsapp_negocio",
+        "question": "¿Cuál es el número de WhatsApp donde atenderás a tus clientes?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 22,
+        "key": "d_objetivo_final",
+        "question": "En una frase: ¿cuál es el resultado más importante que esperas de toda esta automatización?",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      },
+      {
+        "id": 23,
+        "key": "d_referencia",
+        "question": "¿Tienes alguna web o tienda online de referencia que te guste? (link o escribe \"ninguna\")",
+        "type": "text",
+        "options": [],
+        "isAlert": false
+      }
+    ]
+  },
+  "recRules": [
+    {
+      "id": 1,
+      "field": "objetivo",
+      "value": "Automatizar la atención",
+      "plan": "pro",
+      "priority": 1
+    },
+    {
+      "id": 2,
+      "field": "volumen_mes",
+      "value": "Más de 100",
+      "plan": "pro",
+      "priority": 2
+    },
+    {
+      "id": 3,
+      "field": "objetivo",
+      "value": "Vender productos online",
+      "plan": "crecimiento",
+      "priority": 3
+    },
+    {
+      "id": 4,
+      "field": "objetivo",
+      "value": "Recibir reservas",
+      "plan": "crecimiento",
+      "priority": 4
+    },
+    {
+      "id": 5,
+      "field": "objetivo",
+      "value": "Conseguir más clientes",
+      "plan": "crecimiento",
+      "priority": 5
+    },
+    {
+      "id": 6,
+      "field": "objetivo",
+      "value": "Tener presencia",
+      "plan": "lanzamiento",
+      "priority": 6
+    },
+    {
+      "id": 7,
+      "field": "tiene_web",
+      "value": "No",
+      "plan": "lanzamiento",
+      "priority": 7
+    }
+  ],
+  "recDefault": "lanzamiento",
+  "settings": {
+    "botname": "Asistente webAI",
+    "business": "webAI Studio",
+    "welcome": "¡Hola! 👋 Soy el asistente virtual de webAI Studio. Estoy aquí para ayudarte a encontrar la solución web perfecta para tu negocio. ¿Empezamos?",
+    "systemprompt": "Eres un asistente de ventas amigable de webAI Studio. Ayuda al cliente a elegir el plan correcto. Sé breve, claro y orientado a la solución.",
+    "alertwords": "problema,queja,reclamo,no funciona,estafa,fraude,molesto,enojado,terrible,pésimo,malo,devolución",
+    "whatsapp": "3215436013"
+  },
+  "published": 1781553282447
+}
