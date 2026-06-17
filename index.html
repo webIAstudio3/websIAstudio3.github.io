@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Convierte visitantes en clientes 24/7 con una web que responde, vende y agenda automáticamente.">
+<meta name="theme-color" content="#0B0C10">
+<title>webAI Studio — Tu web lista para vender</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600&display=swap" rel="stylesheet">
+<style>
+  /* ─── RESET ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ─── TOKENS ─── */
+  :root {
+    --ink:    #0B0C10;
+    --ink2:   #1A1C26;
+    --ink3:   #22253A;
+    --lime:   #C8FF00;
+    --lime2:  #A8E000;
+    --sky:    #4FC3F7;
+    --violet: #7C5CFC;
+    --coral:  #FF6B6B;
+    --amber:  #FFB347;
+    --mint:   #00E5A0;
+    --white:  #FFFFFF;
+    --muted:  #8A8D9F;
+    --border: rgba(255,255,255,0.08);
+    --font-head: 'Clash Display', sans-serif;
+    --font-body: 'Bricolage Grotesque', sans-serif;
+  }
+
+  html  { scroll-behavior: smooth; }
+  body  { background: var(--ink); color: var(--white); font-family: var(--font-body); overflow-x: hidden; line-height: 1.6; }
+
+  /* ─── NAV ─── */
+  .nav {
+    padding: 1rem 2.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(11,12,16,0.95);
+    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 99;
+  }
+  .nav-brand  { display: flex; align-items: center; gap: .6rem; }
+  .nav-logo-mark {
+    width: 32px; height: 32px; background: var(--lime); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-weight: 700; font-size: .9rem; color: var(--ink);
+  }
+  .nav-name        { font-family: var(--font-head); font-weight: 600; font-size: 1rem; letter-spacing: -.01em; }
+  .nav-name span   { color: var(--lime); }
+  .nav-links       { display: flex; gap: 1.8rem; list-style: none; }
+  .nav-links a     { color: var(--muted); text-decoration: none; font-size: .85rem; transition: color .2s; }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta {
+    background: var(--lime); color: var(--ink); border: none;
+    padding: .55rem 1.4rem; border-radius: 999px;
+    font-size: .85rem; font-weight: 600; cursor: pointer;
+    font-family: var(--font-body); transition: transform .15s; letter-spacing: -.01em;
+  }
+  .nav-cta:hover { transform: scale(1.04); }
+  .nav-hamburger { display: none; background: none; border: none; color: var(--white); font-size: 1.4rem; cursor: pointer; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 5rem 2.5rem 4rem;
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 420px; gap: 4rem; align-items: center;
+  }
+  .hero-pill {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(200,255,0,.1); border: 1px solid rgba(200,255,0,.3); color: var(--lime);
+    border-radius: 999px; padding: .3rem .9rem;
+    font-size: .75rem; font-weight: 500; margin-bottom: 1.4rem;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .hero-pill-dot { width: 6px; height: 6px; background: var(--lime); border-radius: 50%; animation: blink 1.8s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+  .hero h1 {
+    font-family: var(--font-head); font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 700; line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1.2rem;
+  }
+  .h1-lime { color: var(--lime); }
+  .hero-sub { color: var(--muted); font-size: 1.05rem; font-weight: 300; line-height: 1.75; max-width: 480px; margin-bottom: 2rem; }
+  .hero-btns { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .btn-lime {
+    background: var(--lime); color: var(--ink);
+    padding: .8rem 1.8rem; border-radius: 999px; text-decoration: none;
+    font-weight: 600; font-size: .92rem; transition: transform .15s, opacity .15s;
+    cursor: pointer; border: none; font-family: var(--font-body); display: inline-block;
+  }
+  .btn-lime:hover { transform: scale(1.04); }
+  .btn-ghost {
+    background: transparent; color: var(--white);
+    padding: .8rem 1.8rem; border-radius: 999px; text-decoration: none;
+    font-weight: 400; font-size: .92rem; border: 1px solid var(--border);
+    transition: border-color .2s; cursor: pointer; font-family: var(--font-body); display: inline-block;
+  }
+  .btn-ghost:hover { border-color: rgba(200,255,0,.4); }
+  .hero-proof { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .proof-avatars { display: flex; }
+  .proof-avatar {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--ink);
+    margin-left: -6px; font-size: .65rem; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--ink3); color: var(--lime);
+  }
+  .proof-text { font-size: .8rem; color: var(--muted); }
+  .proof-text strong { color: var(--white); font-weight: 500; }
+
+  /* ─── BROWSER MOCKUP ─── */
+  .browser-wrap { background: var(--ink2); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
+  .browser-bar {
+    background: var(--ink3); padding: .6rem .9rem;
+    display: flex; align-items: center; gap: .6rem; border-bottom: 1px solid var(--border);
+  }
+  .b-dot     { width: 8px; height: 8px; border-radius: 50%; }
+  .b-url     { background: rgba(255,255,255,.06); border-radius: 999px; padding: .2rem .8rem; font-size: .72rem; color: var(--muted); flex: 1; max-width: 200px; }
+  .browser-content { padding: 1.2rem; }
+  .bc-header {
+    background: var(--lime); border-radius: 8px; padding: .8rem 1rem; margin-bottom: .8rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .bc-header-text { font-family: var(--font-head); font-size: .9rem; font-weight: 700; color: var(--ink); }
+  .bc-header-btn  { background: var(--ink); color: var(--lime); border-radius: 999px; padding: .25rem .7rem; font-size: .65rem; font-weight: 600; }
+  .bc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .6rem; }
+  .bc-card { background: var(--ink3); border-radius: 8px; padding: .7rem; border: 1px solid var(--border); }
+  .bc-card-title { font-size: .68rem; font-weight: 600; margin-bottom: .25rem; color: var(--white); }
+  .bc-card-val   { font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; }
+  .bc-bar-row    { display: flex; align-items: center; gap: .5rem; margin-bottom: .4rem; }
+  .bc-bar-label  { font-size: .65rem; color: var(--muted); width: 48px; flex-shrink: 0; }
+  .bc-bar-track  { flex: 1; height: 6px; background: rgba(255,255,255,.06); border-radius: 999px; overflow: hidden; }
+  .bc-bar-fill   { height: 100%; border-radius: 999px; }
+  .bc-tag        { display: inline-block; padding: .15rem .5rem; border-radius: 999px; font-size: .62rem; font-weight: 600; margin-right: .3rem; }
+
+  /* ─── MARQUEE ─── */
+  .marquee-wrap  { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: .85rem 0; overflow: hidden; background: var(--ink2); }
+  .marquee-track { display: flex; gap: 3rem; white-space: nowrap; animation: marquee 22s linear infinite; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  .marquee-item  { display: flex; align-items: center; gap: .6rem; font-size: .8rem; color: var(--muted); font-weight: 400; flex-shrink: 0; }
+  .marquee-dot   { width: 4px; height: 4px; background: var(--lime); border-radius: 50%; flex-shrink: 0; }
+
+  /* ─── SECTION BASE ─── */
+  .sec   { padding: 5rem 2.5rem; }
+  .con   { max-width: 1100px; margin: 0 auto; }
+  .sec-eyebrow {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 600;
+    margin-bottom: 1rem; padding: .3rem .85rem; border-radius: 999px;
+  }
+  .ey-lime   { background: rgba(200,255,0,.1);    color: var(--lime);   border: 1px solid rgba(200,255,0,.25); }
+  .ey-sky    { background: rgba(79,195,247,.08);  color: var(--sky);    border: 1px solid rgba(79,195,247,.2); }
+  .ey-violet { background: rgba(124,92,252,.1);   color: #B09BFF;       border: 1px solid rgba(124,92,252,.2); }
+  .ey-coral  { background: rgba(255,107,107,.08); color: #FF9090;       border: 1px solid rgba(255,107,107,.2); }
+  .ey-amber  { background: rgba(255,179,71,.08);  color: var(--amber);  border: 1px solid rgba(255,179,71,.2); }
+  .ey-mint   { background: rgba(0,229,160,.08);   color: var(--mint);   border: 1px solid rgba(0,229,160,.2); }
+  h2         { font-family: var(--font-head); font-size: clamp(1.8rem,3.5vw,2.8rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; margin-bottom: .75rem; }
+  .sec-sub   { color: var(--muted); font-size: 1rem; font-weight: 300; line-height: 1.75; max-width: 520px; margin-bottom: 2.5rem; }
+
+  /* ─── SERVICES ─── */
+  .services-bg { background: var(--ink2); }
+  .services-mosaic {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 1px; background: var(--border); border-radius: 16px; overflow: hidden;
+  }
+  .svc       { background: var(--ink2); padding: 1.8rem; transition: background .25s; cursor: default; }
+  .svc:hover { background: var(--ink3); }
+  .svc-top   { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
+  .svc-icon-wrap { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+  .svc-num   { font-family: var(--font-head); font-size: .75rem; font-weight: 600; color: var(--muted); }
+  .svc h3    { font-family: var(--font-head); font-size: 1.05rem; font-weight: 600; margin-bottom: .5rem; letter-spacing: -.01em; }
+  .svc p     { font-size: .83rem; color: var(--muted); font-weight: 300; line-height: 1.65; }
+  .svc-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: 1rem; }
+  .chip      { background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 999px; padding: .18rem .65rem; font-size: .68rem; color: var(--muted); }
+  .ic-lime   { background: rgba(200,255,0,.12); }
+  .ic-sky    { background: rgba(79,195,247,.1); }
+  .ic-violet { background: rgba(124,92,252,.12); }
+  .ic-coral  { background: rgba(255,107,107,.1); }
+  .ic-amber  { background: rgba(255,179,71,.1); }
+  .ic-mint   { background: rgba(0,229,160,.1); }
+  .svc.wide  { grid-column: span 2; }
+
+  /* ─── RESULTS ─── */
+  .results-band { background: var(--ink2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .results-row  { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; }
+  .result-item  { padding: 2.2rem 2rem; border-right: 1px solid var(--border); text-align: center; }
+  .result-item:last-child { border-right: none; }
+  .result-num   { font-family: var(--font-head); font-size: 2.4rem; font-weight: 700; letter-spacing: -.03em; }
+  .result-label { font-size: .78rem; color: var(--muted); font-weight: 300; margin-top: .2rem; }
+
+  /* ─── STEPS ─── */
+  .steps-row  { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; }
+  .step-item  {}
+  .step-n     { font-family: var(--font-head); font-size: 3.5rem; font-weight: 700; color: rgba(200,255,0,.08); line-height: 1; margin-bottom: .5rem; }
+  .step-item h4 { font-family: var(--font-head); font-size: 1rem; font-weight: 600; margin-bottom: .4rem; letter-spacing: -.01em; }
+  .step-item p  { font-size: .83rem; color: var(--muted); font-weight: 300; line-height: 1.65; }
+  .step-icon  { width: 36px; height: 36px; border-radius: 10px; background: rgba(200,255,0,.1); border: 1px solid rgba(200,255,0,.2); display: flex; align-items: center; justify-content: center; font-size: .9rem; margin-bottom: .8rem; }
+
+  /* ─── DELIVERABLES ─── */
+  .deliverables-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 1px; background: var(--border); border-radius: 16px; overflow: hidden; }
+  .del-item      { background: var(--ink2); padding: 1.4rem 1.2rem; display: flex; align-items: flex-start; gap: .8rem; transition: background .2s; }
+  .del-item:hover { background: var(--ink3); }
+  .del-dot       { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: .35rem; }
+  .del-text h5   { font-family: var(--font-head); font-size: .88rem; font-weight: 600; margin-bottom: .2rem; }
+  .del-text p    { font-size: .75rem; color: var(--muted); font-weight: 300; line-height: 1.55; }
+
+  /* ─── TESTIMONIALS ─── */
+  .testi-grid    { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
+  .testi         { background: var(--ink2); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+  .testi-stars   { display: flex; gap: 2px; margin-bottom: .8rem; }
+  .testi-star    { color: var(--amber); font-size: .8rem; }
+  .testi blockquote { font-size: .88rem; color: var(--white); font-weight: 300; line-height: 1.7; font-style: italic; margin-bottom: 1rem; }
+  .testi-author  { display: flex; align-items: center; gap: .6rem; }
+  .testi-av      { width: 32px; height: 32px; border-radius: 50%; font-size: .75rem; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  .testi-name    { font-size: .8rem; font-weight: 500; }
+  .testi-biz     { font-size: .72rem; color: var(--muted); font-weight: 300; }
+
+  /* ─── PRICING ─── */
+  .pricing-grid  { display: grid; grid-template-columns: repeat(5,1fr); gap: 1rem; }
+  @media (max-width: 1100px) { .pricing-grid { grid-template-columns: repeat(2,1fr); } }
+  /* Carrusel arrastrable */
+  .pricing-grid.drag-scroll {
+    display: flex; grid-template-columns: none;
+    overflow-x: auto; scroll-snap-type: x proximity;
+    cursor: grab; user-select: none;
+    padding-bottom: 1rem; scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pricing-grid.drag-scroll.dragging { cursor: grabbing; }
+  .pricing-grid.drag-scroll .p-card {
+    flex: 0 0 300px; max-width: 300px; scroll-snap-align: center;
+  }
+  .pricing-grid.drag-scroll::-webkit-scrollbar { height: 6px; }
+  .pricing-grid.drag-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+  .drag-hint { font-size: .8rem; color: var(--muted); margin-top: .6rem; display: flex; align-items: center; gap: .4rem; }
+  .p-card        { border-radius: 16px; border: 1px solid var(--border); padding: 2rem; background: var(--ink2); transition: border-color .3s, transform .3s; }
+  .p-card:hover  { transform: translateY(-3px); }
+  .p-card.featured { border-color: var(--lime); background: rgba(200,255,0,.04); }
+  .p-tier        { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin-bottom: .5rem; }
+  .p-tier.lime   { color: var(--lime); }
+  .p-tier.sky    { color: var(--sky); }
+  .p-tier.violet { color: #B09BFF; }
+  .p-tier.coral  { color: var(--coral); }
+  .p-price       { font-family: var(--font-head); font-size: 2.2rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+  .p-price span  { font-size: 1rem; font-weight: 400; color: var(--muted); font-family: var(--font-body); }
+  .p-mensual     { font-size: .8rem; color: var(--muted); font-weight: 400; margin-top: .45rem; }
+  .p-mensual b   { color: var(--white); font-weight: 600; }
+  .p-desc        { font-size: .82rem; color: var(--muted); font-weight: 300; line-height: 1.6; margin: 1rem 0 1.4rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .p-features    { list-style: none; display: flex; flex-direction: column; gap: .65rem; margin-bottom: 1.8rem; }
+  .p-features li { font-size: .83rem; color: var(--muted); display: flex; align-items: flex-start; gap: .55rem; font-weight: 300; line-height: 1.45; }
+  .p-check       { color: var(--lime); font-size: .8rem; margin-top: 1px; flex-shrink: 0; }
+  .p-check.dim   { color: var(--muted); }
+  .btn-p         { width: 100%; padding: .75rem; border-radius: 999px; font-family: var(--font-body); font-size: .88rem; font-weight: 500; cursor: pointer; transition: background .2s, color .2s, transform .15s; letter-spacing: -.01em; }
+  .btn-p:hover   { transform: scale(1.02); }
+  .btn-p.outline { background: transparent; color: var(--white); border: 1px solid var(--border); }
+  .btn-p.outline:hover { border-color: var(--lime); color: var(--lime); }
+  .btn-p.solid   { background: var(--lime); color: var(--ink); border: none; }
+  .p-badge       { display: inline-block; background: var(--lime); color: var(--ink); font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: .2rem .6rem; border-radius: 999px; margin-bottom: .6rem; }
+
+  /* ─── CTA SECTION ─── */
+  .cta-sec {
+    background: var(--lime); border-radius: 24px;
+    padding: 4rem 3rem; margin: 0 2.5rem 5rem;
+    max-width: 1060px; margin-left: auto; margin-right: auto;
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2rem;
+  }
+  .cta-sec h2  { font-family: var(--font-head); font-size: clamp(1.8rem,3vw,2.6rem); color: var(--ink); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; margin-bottom: .5rem; }
+  .cta-sec p   { color: rgba(11,12,16,.6); font-size: .95rem; font-weight: 400; line-height: 1.65; }
+  .cta-btns-wrap { display: flex; flex-direction: column; gap: .7rem; flex-shrink: 0; }
+  .btn-dark    { background: var(--ink); color: var(--lime); padding: .85rem 2rem; border-radius: 999px; font-weight: 600; font-size: .92rem; cursor: pointer; border: none; font-family: var(--font-body); transition: transform .15s; white-space: nowrap; text-decoration: none; display: inline-block; text-align: center; }
+  .btn-dark:hover { transform: scale(1.04); }
+  .btn-ink-ghost { background: transparent; color: var(--ink); padding: .85rem 2rem; border-radius: 999px; font-weight: 400; font-size: .88rem; cursor: pointer; border: 2px solid rgba(11,12,16,.25); font-family: var(--font-body); white-space: nowrap; text-decoration: none; display: inline-block; text-align: center; }
+
+  /* ─── FOOTER ─── */
+  footer          { background: var(--ink); border-top: 1px solid var(--border); padding: 2.5rem 2.5rem; }
+  .footer-in      { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .footer-brand   { display: flex; align-items: center; gap: .5rem; }
+  .footer-mark    { width: 26px; height: 26px; background: var(--lime); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 700; font-size: .75rem; color: var(--ink); }
+  .footer-name    { font-family: var(--font-head); font-size: .9rem; font-weight: 600; }
+  .footer-name span { color: var(--lime); }
+  .footer-links   { display: flex; gap: 1.5rem; list-style: none; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: .8rem; transition: color .2s; }
+  .footer-links a:hover { color: var(--white); }
+  .footer-copy    { font-size: .75rem; color: var(--muted); }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal         { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.on      { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero            { grid-template-columns: 1fr; gap: 2.5rem; }
+    .services-mosaic { grid-template-columns: 1fr 1fr; }
+    .svc.wide        { grid-column: span 2; }
+    .steps-row       { grid-template-columns: 1fr 1fr; }
+    .results-row     { grid-template-columns: 1fr 1fr; }
+    .testi-grid      { grid-template-columns: 1fr 1fr; }
+    .pricing-grid    { grid-template-columns: 1fr; }
+    .cta-sec         { grid-template-columns: 1fr; text-align: center; padding: 2.5rem 1.5rem; margin: 0 1rem 3rem; }
+    .cta-btns-wrap   { flex-direction: row; justify-content: center; flex-wrap: wrap; }
+    .nav-links       { display: none; }
+    .nav-hamburger   { display: block; }
+  }
+  @media (max-width: 600px) {
+    .services-mosaic { grid-template-columns: 1fr; }
+    .svc.wide        { grid-column: span 1; }
+    .steps-row       { grid-template-columns: 1fr; }
+    .results-row     { grid-template-columns: 1fr 1fr; }
+    .testi-grid      { grid-template-columns: 1fr; }
+    .nav             { padding: 1rem 1.2rem; }
+    .sec             { padding: 3.5rem 1.2rem; }
+    .hero            { padding: 4rem 1.2rem 3rem; }
+    .cta-sec         { margin: 0 .8rem 3rem; padding: 2rem 1.2rem; }
+    footer           { padding: 2rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ NAV ══════════════════════ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo-mark">W</div>
+    <span class="nav-name">web<span>AI</span>studio</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#que-hacemos">Servicios</a></li>
+    <li><a href="#como-funciona">Proceso</a></li>
+    <li><a href="#precios">Precios</a></li>
+    <li><a href="#testimonios">Clientes</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.location.href='#contacto'">Empezar gratis →</button>
+  <button class="nav-hamburger" aria-label="Menú" onclick="toggleMobileMenu()">☰</button>
+</nav>
+
+<!-- Mobile menu (hidden by default) -->
+<div id="mobile-menu" style="display:none;position:fixed;top:57px;left:0;right:0;background:var(--ink2);border-bottom:1px solid var(--border);padding:1.2rem 2rem;z-index:98;flex-direction:column;gap:1rem;">
+  <a href="#que-hacemos" style="color:var(--muted);text-decoration:none;font-size:.95rem;" onclick="toggleMobileMenu()">Servicios</a>
+  <a href="#como-funciona" style="color:var(--muted);text-decoration:none;font-size:.95rem;" onclick="toggleMobileMenu()">Proceso</a>
+  <a href="#precios" style="color:var(--muted);text-decoration:none;font-size:.95rem;" onclick="toggleMobileMenu()">Precios</a>
+  <a href="#testimonios" style="color:var(--muted);text-decoration:none;font-size:.95rem;" onclick="toggleMobileMenu()">Clientes</a>
+  <a href="#contacto" style="color:var(--lime);text-decoration:none;font-size:.95rem;font-weight:600;" onclick="toggleMobileMenu()">Empezar gratis →</a>
+</div>
+
+<!-- ══════════════════════ HERO ══════════════════════ -->
+<div class="hero">
+  <div class="reveal">
+    <div class="hero-pill"><span class="hero-pill-dot"></span>Automatización con IA para tu negocio</div>
+    <h1>No vendo páginas. Te vendo <span class="h1-lime">más ventas</span> y tu tiempo de vuelta.</h1>
+    <p class="hero-sub">Automatizo la atención y las ventas de tu negocio con IA: captas más clientes, respondes 24/7 y dejas de perder oportunidades — sin contratar a nadie más.</p>
+    <div class="hero-btns">
+      <a href="#precios" class="btn-lime">Quiero automatizar mi negocio →</a>
+      <a href="#que-hacemos" class="btn-ghost">Ver cómo funciona</a>
+    </div>
+    <div class="hero-proof">
+      <div class="proof-avatars">
+        <div class="proof-avatar">★</div>
+        <div class="proof-avatar">★</div>
+        <div class="proof-avatar">★</div>
+        <div class="proof-avatar">★</div>
+        <div class="proof-avatar">★</div>
+      </div>
+      <p class="proof-text"><strong>Listo en 5 días</strong>, captando y atendiendo clientes solo</p>
+    </div>
+  </div>
+  <div class="reveal">
+    <div class="browser-wrap">
+      <div class="browser-bar">
+        <div class="b-dot" style="background:#FF5F57"></div>
+        <div class="b-dot" style="background:#FFBD2E"></div>
+        <div class="b-dot" style="background:#28C840"></div>
+        <div class="b-url">tunegocio.com</div>
+      </div>
+      <div class="browser-content">
+        <div class="bc-header">
+          <div class="bc-header-text">Mi Tienda · ventas hoy</div>
+          <div class="bc-header-btn">En vivo</div>
+        </div>
+        <div class="bc-grid">
+          <div class="bc-card">
+            <div class="bc-card-title">Visitas</div>
+            <div class="bc-card-val" style="color:var(--sky)">1,248</div>
+          </div>
+          <div class="bc-card">
+            <div class="bc-card-title">Ventas</div>
+            <div class="bc-card-val" style="color:var(--lime)">$847K</div>
+          </div>
+        </div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.5rem">Canales de tráfico</div>
+        <div class="bc-bar-row"><span class="bc-bar-label">Orgánico</span><div class="bc-bar-track"><div class="bc-bar-fill" style="width:72%;background:var(--lime)"></div></div></div>
+        <div class="bc-bar-row"><span class="bc-bar-label">Redes</span><div class="bc-bar-track"><div class="bc-bar-fill" style="width:48%;background:var(--sky)"></div></div></div>
+        <div class="bc-bar-row"><span class="bc-bar-label">Directo</span><div class="bc-bar-track"><div class="bc-bar-fill" style="width:31%;background:var(--violet)"></div></div></div>
+        <div style="margin-top:.8rem;display:flex;gap:.3rem;flex-wrap:wrap">
+          <span class="bc-tag" style="background:rgba(200,255,0,.12);color:var(--lime)">SEO ✓</span>
+          <span class="bc-tag" style="background:rgba(79,195,247,.1);color:var(--sky)">Chatbot ✓</span>
+          <span class="bc-tag" style="background:rgba(124,92,252,.12);color:#B09BFF">Pagos ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ MARQUEE ══════════════════════ -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="marquee-dot"></span>Más clientes captados</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Atención automática 24/7</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Menos tiempo respondiendo lo mismo</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Ventas que no se te escapan</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Seguimiento automático de interesados</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Tus procesos optimizados</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>IA que entiende y vende</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Tu negocio trabajando solo</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Multicanal: WhatsApp, Instagram y más</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Resultados medibles cada mes</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Más clientes captados</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Atención automática 24/7</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Menos tiempo respondiendo lo mismo</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Ventas que no se te escapan</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Seguimiento automático de interesados</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Tus procesos optimizados</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>IA que entiende y vende</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Tu negocio trabajando solo</span>
+  </div>
+</div>
+
+<!-- ══════════════════════ SERVICIOS ══════════════════════ -->
+<section class="sec services-bg" id="que-hacemos">
+  <div class="con">
+    <div class="reveal">
+      <div class="sec-eyebrow ey-lime">Lo que realmente hago por ti</div>
+      <h2>No te entrego una página.<br>Te entrego un negocio que vende solo.</h2>
+      <p class="sec-sub">La página es solo la herramienta. Lo que de verdad recibes es tiempo libre, procesos optimizados, más clientes captados y ventas que antes se te escapaban — todo funcionando 24/7 aunque tú no estés.</p>
+    </div>
+    <div class="services-mosaic reveal">
+      <div class="svc wide">
+        <div class="svc-top">
+          <div class="svc-icon-wrap ic-lime">🚀</div>
+          <span class="svc-num">01</span>
+        </div>
+        <h3>Landing page de ventas</h3>
+        <p>Página enfocada 100% en convertir visitantes en clientes. Diseñamos la estructura, los textos persuasivos, el llamado a la acción y la integración con WhatsApp o formulario. Lista en 5 días.</p>
+        <div class="svc-chips">
+          <span class="chip">Copywriting incluido</span>
+          <span class="chip">CTA optimizado</span>
+          <span class="chip">WhatsApp integrado</span>
+          <span class="chip">Formulario de captura</span>
+        </div>
+      </div>
+      <div class="svc">
+        <div class="svc-top">
+          <div class="svc-icon-wrap ic-sky">🛍️</div>
+          <span class="svc-num">02</span>
+        </div>
+        <h3>Tienda online</h3>
+        <p>E-commerce completo con catálogo, carrito, pagos y gestión de pedidos. Para vender desde el día 1.</p>
+        <div class="svc-chips">
+          <span class="chip">Pasarela de pagos</span>
+          <span class="chip">Catálogo ilimitado</span>
+          <span class="chip">Gestión de stock</span>
+        </div>
+      </div>
+      <div class="svc">
+        <div class="svc-top">
+          <div class="svc-icon-wrap ic-violet">🤖</div>
+          <span class="svc-num">03</span>
+        </div>
+        <h3>Chatbot con IA</h3>
+        <p>Asistente virtual que atiende clientes 24/7, responde preguntas y captura leads mientras duermes.</p>
+        <div class="svc-chips">
+          <span class="chip">Entrenado con tu info</span>
+          <span class="chip">WhatsApp + web</span>
+        </div>
+      </div>
+      <div class="svc">
+        <div class="svc-top">
+          <div class="svc-icon-wrap ic-coral">🎨</div>
+          <span class="svc-num">04</span>
+        </div>
+        <h3>Diseño a tu medida</h3>
+        <p>Tus colores, tu fuente, tu estilo. Diseñamos la identidad visual completa de tu página para que sea tuya.</p>
+        <div class="svc-chips">
+          <span class="chip">Paleta personalizada</span>
+          <span class="chip">Logo incluido</span>
+        </div>
+      </div>
+      <div class="svc">
+        <div class="svc-top">
+          <div class="svc-icon-wrap ic-amber">📈</div>
+          <span class="svc-num">05</span>
+        </div>
+        <h3>SEO y visibilidad</h3>
+        <p>Tu negocio aparece en Google cuando tus clientes te buscan. Optimización técnica y de contenido.</p>
+        <div class="svc-chips">
+          <span class="chip">Google Search</span>
+          <span class="chip">Google Analytics</span>
+        </div>
+      </div>
+      <div class="svc">
+        <div class="svc-top">
+          <div class="svc-icon-wrap ic-mint">📲</div>
+          <span class="svc-num">06</span>
+        </div>
+        <h3>Integraciones</h3>
+        <p>Conectamos tu web con Instagram, Facebook Ads, Mailchimp, Mercado Pago y más herramientas.</p>
+        <div class="svc-chips">
+          <span class="chip">Pixel de FB</span>
+          <span class="chip">Email marketing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ RESULTADOS ══════════════════════ -->
+<section class="sec results-band">
+  <div class="con">
+    <div class="results-row reveal">
+      <div class="result-item">
+        <div class="result-num" style="color:var(--lime)">5 días</div>
+        <div class="result-label">Entrega promedio de tu web</div>
+      </div>
+      <div class="result-item">
+        <div class="result-num" style="color:var(--sky)">+3x</div>
+        <div class="result-label">Más consultas vs sin web</div>
+      </div>
+      <div class="result-item">
+        <div class="result-num" style="color:var(--violet)">5 días</div>
+        <div class="result-label">Tu web lista y publicada</div>
+      </div>
+      <div class="result-item">
+        <div class="result-num" style="color:var(--amber)">100%</div>
+        <div class="result-label">Satisfacción garantizada</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ CÓMO FUNCIONA ══════════════════════ -->
+<section class="sec" id="como-funciona">
+  <div class="con">
+    <div class="reveal">
+      <div class="sec-eyebrow ey-sky">Proceso</div>
+      <h2>De cero a online en 5 días</h2>
+      <p class="sec-sub">Sin reuniones interminables. Sin tecnicismos. Solo dinos qué vendes y nosotros hacemos todo.</p>
+    </div>
+    <div class="steps-row reveal">
+      <div class="step-item">
+        <div class="step-n">01</div>
+        <div class="step-icon">💬</div>
+        <h4>Cuéntanos tu negocio</h4>
+        <p>Nos dices qué vendes, a quién, tus colores y lo que quieres lograr. Una llamada de 20 minutos es suficiente.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-n">02</div>
+        <div class="step-icon">🎨</div>
+        <h4>Diseñamos con IA</h4>
+        <p>Combinamos inteligencia artificial y diseño humano para crear tu página única, con tus colores y mensaje.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-n">03</div>
+        <div class="step-icon">✅</div>
+        <h4>Revisas y apruebas</h4>
+        <p>Te mostramos el resultado. Si quieres cambios, los hacemos hasta que quedes 100% satisfecho.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-n">04</div>
+        <div class="step-icon">🚀</div>
+        <h4>Tu web en vivo</h4>
+        <p>Publicamos, configuramos dominio y hosting. Tu negocio ya está generando clientes en internet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ ENTREGABLES ══════════════════════ -->
+<section class="sec services-bg">
+  <div class="con">
+    <div class="reveal">
+      <div class="sec-eyebrow ey-violet">Entregables</div>
+      <h2>Todo incluido, sin sorpresas</h2>
+      <p class="sec-sub">Cada proyecto incluye todo lo que necesitas para salir al mercado con fuerza.</p>
+    </div>
+    <div class="deliverables-grid reveal">
+      <div class="del-item"><div class="del-dot" style="background:var(--lime)"></div><div class="del-text"><h5>Dominio .com</h5><p>Tu nombre en internet por 1 año</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--sky)"></div><div class="del-text"><h5>Hosting premium</h5><p>Rápido, seguro, con SSL</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--violet)"></div><div class="del-text"><h5>Diseño responsivo</h5><p>Perfecto en celular y PC</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--coral)"></div><div class="del-text"><h5>Textos persuasivos</h5><p>Copywriting para convertir</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--amber)"></div><div class="del-text"><h5>Google Analytics</h5><p>Sabes quién visita tu web</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--mint)"></div><div class="del-text"><h5>Botón WhatsApp</h5><p>Clientes directos a tu chat</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--lime)"></div><div class="del-text"><h5>SEO básico</h5><p>Aparece en Google</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--sky)"></div><div class="del-text"><h5>Formulario de contacto</h5><p>Captura leads automáticamente</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--violet)"></div><div class="del-text"><h5>Redes sociales</h5><p>Links a tus perfiles</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--coral)"></div><div class="del-text"><h5>Galería de productos</h5><p>Muestra lo que vendes</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--amber)"></div><div class="del-text"><h5>Sección testimonios</h5><p>Genera confianza y credibilidad</p></div></div>
+      <div class="del-item"><div class="del-dot" style="background:var(--mint)"></div><div class="del-text"><h5>1 mes de soporte</h5><p>Cambios y ajustes incluidos</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ TESTIMONIOS ══════════════════════ -->
+<section class="sec" id="testimonios">
+  <div class="con">
+    <div class="reveal">
+      <div class="sec-eyebrow ey-amber">Por qué elegirnos</div>
+      <h2>Lo que te garantizamos</h2>
+      <p class="sec-sub">Trabajo cercano, rápido y a tu medida. Esto es lo que recibes al confiar en webAI Studio.</p>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi">
+        <div class="testi-stars"><span class="testi-star">⚡</span></div>
+        <blockquote>Tu web profesional lista y publicada en solo 5 días. Sin esperas eternas ni excusas: arrancamos rápido para que empieces a captar clientes ya.</blockquote>
+        <div class="testi-author">
+          <div class="testi-av" style="background:rgba(200,255,0,.12);color:var(--lime)">5d</div>
+          <div><div class="testi-name">Entrega ágil</div><div class="testi-biz">Tu web en 5 días</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars"><span class="testi-star">🤖</span></div>
+        <blockquote>Un asistente con IA que atiende a tus clientes a toda hora, capta sus datos y los guía hacia la compra mientras tú trabajas o descansas.</blockquote>
+        <div class="testi-author">
+          <div class="testi-av" style="background:rgba(79,195,247,.1);color:var(--sky)">24</div>
+          <div><div class="testi-name">Atención 24/7</div><div class="testi-biz">Nunca pierdes un cliente</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars"><span class="testi-star">🎨</span></div>
+        <blockquote>Diseño hecho a la medida de tu marca: tus colores, tu estilo y tu personalidad. Trato directo y cercano con la diseñadora, sin intermediarios.</blockquote>
+        <div class="testi-author">
+          <div class="testi-av" style="background:rgba(124,92,252,.12);color:#B09BFF">✓</div>
+          <div><div class="testi-name">Diseño a tu medida</div><div class="testi-biz">Trato directo y personal</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ PRECIOS ══════════════════════ -->
+<section class="sec services-bg" id="precios">
+  <div class="con">
+    <div class="reveal">
+      <div class="sec-eyebrow ey-coral">Inversión</div>
+      <h2>Precios claros, sin letra pequeña</h2>
+      <p class="sec-sub">No pagas por una página. Pagas por tiempo, captación de clientes y ventas que ya no se te escapan. Un pago de montaje y una mensualidad que mantiene todo funcionando, atendiendo y vendiendo por ti.</p>
+      <div class="drag-hint">👆 Mantén presionado y arrastra para ver todos los planes</div>
+    </div>
+    <div class="pricing-grid drag-scroll reveal" id="pricingGrid">
+      <div class="p-card">
+        <div class="p-tier coral">Solo el Chat</div>
+        <div class="p-price">$400K <span>COP</span></div>
+        <div class="p-mensual">+ <b>$100K/mes</b> de mantenimiento</div>
+        <div class="p-desc">¿Ya tienes página web? Le instalamos el chat de IA flotante para que empiece a captar clientes sin rehacer nada.</div>
+        <ul class="p-features">
+          <li><span class="p-check">✓</span>Chat de IA flotante en tu web</li>
+          <li><span class="p-check">✓</span>Se instala con una línea de código</li>
+          <li><span class="p-check">✓</span>Capta y guarda tus prospectos</li>
+          <li><span class="p-check">✓</span>Panel para ver tus leads</li>
+          <li><span class="p-check">✓</span>Diseño con tus colores</li>
+          <li><span class="p-check">✓</span>Botón directo a WhatsApp</li>
+        </ul>
+        <a href="#contacto" class="btn-p outline">Quiero solo el chat</a>
+      </div>
+      <div class="p-card">
+        <div class="p-tier sky">Lanzamiento</div>
+        <div class="p-price">$700K <span>COP</span></div>
+        <div class="p-mensual">2 formas de empezar 👇</div>
+        <div class="p-desc">Tu presencia profesional lista en 5 días. Elige según si prefieres pago único o automatización.</div>
+        <ul class="p-features">
+          <li style="display:block;margin-bottom:.5rem"><b style="color:var(--sky)">🅰️ Solo página + WhatsApp — $700K</b><br><span style="color:var(--muted);font-size:.85rem">Pago único, <b>sin mensualidad</b>. Ideal si no quieres pagos mensuales.</span></li>
+          <li><span class="p-check">✓</span>Landing profesional con tu marca</li>
+          <li><span class="p-check">✓</span>Botón directo a WhatsApp</li>
+          <li><span class="p-check">✓</span>Versión móvil · entrega en 5 días</li>
+          <li style="display:block;margin:.6rem 0 .5rem"><b style="color:var(--sky)">🅱️ Página + Chatbot WhatsApp — $950K</b><br><span style="color:var(--muted);font-size:.85rem">+ $120K/mes. Suma un chatbot sencillo que responde y capta por WhatsApp.</span></li>
+          <li><span class="p-check">✓</span>Todo lo anterior + chatbot WhatsApp</li>
+        </ul>
+        <a href="#contacto" class="btn-p outline">Empezar con este plan</a>
+      </div>
+      <div class="p-card featured">
+        <div class="p-badge">Más popular</div>
+        <div class="p-tier lime">Crecimiento</div>
+        <div class="p-price">$1.5M <span>COP</span></div>
+        <div class="p-mensual">+ <b>$220K/mes</b> de mantenimiento</div>
+        <div class="p-desc">Para vender en serio por WhatsApp. Tu negocio atiende, responde y hace seguimiento solo.</div>
+        <ul class="p-features">
+          <li><span class="p-check">✓</span>Todo el plan Lanzamiento</li>
+          <li><span class="p-check">✓</span><b>Automatización inteligente de WhatsApp</b></li>
+          <li><span class="p-check">✓</span>Atención automática 24/7</li>
+          <li><span class="p-check">✓</span>Seguimiento de interesados</li>
+          <li><span class="p-check">✓</span>Web de hasta 5 secciones</li>
+          <li><span class="p-check">✓</span>Pasarela de pagos · galería</li>
+          <li><span class="p-check">✓</span>SEO + Google Analytics</li>
+          <li><span class="p-check">✓</span>Soporte prioritario</li>
+          <li style="color:var(--muted);font-size:.85rem;margin-top:.3rem">📱 Canal: WhatsApp</li>
+        </ul>
+        <a href="#contacto" class="btn-p solid">Quiero este plan →</a>
+      </div>
+      <div class="p-card">
+        <div class="p-tier violet">Pro + IA</div>
+        <div class="p-price">$2.5M <span>COP</span></div>
+        <div class="p-mensual">+ <b>$350K/mes</b> de mantenimiento</div>
+        <div class="p-desc">Tu negocio atendido en 2 canales a la vez, con tienda online y seguimiento automático.</div>
+        <ul class="p-features">
+          <li><span class="p-check">✓</span>Todo el plan Crecimiento</li>
+          <li><span class="p-check">✓</span><b>Automatización en 2 canales a tu elección</b></li>
+          <li><span class="p-check">✓</span>Tienda / catálogo online completo</li>
+          <li><span class="p-check">✓</span>Seguimiento automático de leads</li>
+          <li><span class="p-check">✓</span>Gestión de contenido mensual</li>
+          <li><span class="p-check">✓</span>Reportes de resultados</li>
+          <li><span class="p-check">✓</span>Capacitación incluida</li>
+          <li style="color:var(--muted);font-size:.85rem;margin-top:.3rem">📱 Canales: 2 (ej: WhatsApp + Instagram)</li>
+        </ul>
+        <a href="#contacto" class="btn-p outline">Conocer el plan Pro</a>
+      </div>
+      <div class="p-card">
+        <div class="p-badge" style="background:var(--amber,#FFB347);color:#1a1a2e">Máxima potencia</div>
+        <div class="p-tier" style="background:rgba(255,179,71,.15);color:#FFB347">Automatización 360</div>
+        <div class="p-price">$3.5M <span>COP</span></div>
+        <div class="p-mensual">+ <b>$500K/mes</b> de mantenimiento</div>
+        <div class="p-desc">Tu negocio entero en piloto automático, en TODOS tus canales a la vez. La opción definitiva.</div>
+        <ul class="p-features">
+          <li><span class="p-check">✓</span>Todo el plan Pro + IA</li>
+          <li><span class="p-check">✓</span><b>TODOS tus canales conectados</b></li>
+          <li><span class="p-check">✓</span>WhatsApp + Instagram + Facebook + TikTok</li>
+          <li><span class="p-check">✓</span>IA que entiende y vende en cada canal</li>
+          <li><span class="p-check">✓</span>Calificación automática de leads</li>
+          <li><span class="p-check">✓</span>Seguimiento en todos los canales</li>
+          <li><span class="p-check">✓</span>Proceso mucho más rápido y eficiente</li>
+          <li><span class="p-check">✓</span>Reportes por canal</li>
+          <li style="color:var(--muted);font-size:.85rem;margin-top:.3rem">📱 Canales: TODOS conectados</li>
+        </ul>
+        <a href="#contacto" class="btn-p outline">Quiero automatizar todo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ CTA FINAL ══════════════════════ -->
+<div class="cta-sec reveal" id="contacto">
+  <div>
+    <h2>¿Listo para que tu negocio<br>trabaje y venda solo?</h2>
+    <p>Primera consulta gratis. En 20 minutos te decimos exactamente qué necesita tu negocio para captar más clientes y cuánto cuesta.</p>
+  </div>
+  <div class="cta-btns-wrap">
+    <a href="#" class="btn-dark" onclick="openWebAIChat(); return false;">Consulta gratuita →</a>
+    <a href="mailto:webiastudio3ai@gmail.com" class="btn-ink-ghost">Enviar un correo</a>
+  </div>
+</div>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer>
+  <div class="footer-in">
+    <div class="footer-brand">
+      <div class="footer-mark">W</div>
+      <span class="footer-name">web<span>AI</span>studio</span>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#que-hacemos">Servicios</a></li>
+      <li><a href="#precios">Precios</a></li>
+      <li><a href="#testimonios">Clientes</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 webAI Studio · Armenia, Colombia</span>
+  </div>
+</footer>
+
+<!-- ══════════════════════ SCRIPTS ══════════════════════ -->
+<script>
+  /* Scroll reveal */
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        e.target.style.transitionDelay = `${(i % 3) * 0.1}s`;
+        e.target.classList.add('on');
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(r => revealObs.observe(r));
+
+  /* Mobile menu toggle */
+  function toggleMobileMenu() {
+    const m = document.getElementById('mobile-menu');
+    m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  /* Carrusel de precios arrastrable con clic izquierdo */
+  (function(){
+    const grid = document.getElementById('pricingGrid');
+    if (!grid) return;
+    let down = false, startX = 0, startScroll = 0, moved = 0;
+
+    grid.addEventListener('mousedown', e => {
+      down = true; moved = 0;
+      startX = e.pageX;
+      startScroll = grid.scrollLeft;
+      grid.classList.add('dragging');
+    });
+    window.addEventListener('mouseup', () => {
+      down = false;
+      grid.classList.remove('dragging');
+    });
+    grid.addEventListener('mouseleave', () => { grid.classList.remove('dragging'); down = false; });
+    grid.addEventListener('mousemove', e => {
+      if (!down) return;
+      e.preventDefault();
+      const dx = e.pageX - startX;
+      moved = Math.abs(dx);
+      grid.scrollLeft = startScroll - dx;
+    });
+    /* Si el usuario arrastró, evita que el clic active el enlace del plan sin querer */
+    grid.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', e => { if (moved > 6) { e.preventDefault(); } });
+    });
+  })();
+</script>
+  <script src="chatbot-float.js"></script>
+</body>
+</html>
